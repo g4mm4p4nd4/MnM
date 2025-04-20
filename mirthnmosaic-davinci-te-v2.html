@@ -1,0 +1,1487 @@
+
+    
+    <!-- JavaScript -->
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navItems = document.querySelector('.nav-items');
+        
+        menuToggle.addEventListener('click', () => {
+            navItems.classList.toggle('active');
+            menuToggle.classList.toggle('active');
+        });
+        
+        // Create grid lines
+        const heroGrid = document.querySelector('.hero-grid');
+        
+        // Horizontal lines
+        for (let i = 0; i <= 16; i++) {
+            const line = document.createElement('div');
+            line.classList.add('hero-grid-line', 'hero-grid-line-h');
+            line.style.gridRow = i + 1;
+            heroGrid.appendChild(line);
+        }
+        
+        // Vertical lines
+        for (let i = 0; i <= 16; i++) {
+            const line = document.createElement('div');
+            line.classList.add('hero-grid-line', 'hero-grid-line-v');
+            line.style.gridColumn = i + 1;
+            heroGrid.appendChild(line);
+        }
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const target = document.querySelector(this.getAttribute('href'));
+                
+                if (target) {
+                    window.scrollTo({
+                        top: target.offsetTop,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Close mobile menu if open
+                    navItems.classList.remove('active');
+                    menuToggle.classList.remove('active');
+                }
+            });
+        });
+        
+        // Custom cursor
+        const cursor = document.querySelector('.custom-cursor');
+        
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+        
+        // p5.js Mosaic Pattern Construction Sketch
+        function createMosaicSketch() {
+            return function(p) {
+                // Mosaic tiles
+                let tiles = [];
+                let pendingTiles = [];
+                const tileSize = 20;
+                const columns = Math.ceil(window.innerWidth / tileSize);
+                const rows = Math.ceil(window.innerHeight / tileSize);
+                
+                // Colors
+                const primaryColors = [
+                    p.color('#D4AF37'), // Gold
+                    p.color('#1E3F66'), // Deep blue
+                    p.color('#8C1C13'), // Deep red
+                    p.color('#FFE03D'), // TE Yellow
+                    p.color('#1A1A1A')  // TE Black
+                ];
+                
+                // Golden ratio for harmonious color selection
+                const goldenRatio = 0.618033988749895;
+                let hue = Math.random();
+                
+                p.setup = function() {
+                    let canvas = p.createCanvas(p.windowWidth, p.windowHeight);
+                    canvas.parent('p5-container');
+                    p.frameRate(30);
+                    
+                    // Initialize grid with empty cells
+                    for (let x = 0; x < columns; x++) {
+                        tiles[x] = [];
+                        for (let y = 0; y < rows; y++) {
+                            tiles[x][y] = {
+                                active: false,
+                                color: null,
+                                size: 0,
+                                targetSize: tileSize,
+                                opacity: 0,
+                                targetOpacity: p.random(0.2, 0.7),
+                                pattern: Math.floor(p.random(4))
+                            };
+                        }
+                    }
+                    
+                    // Start with a few tiles
+                    addNewTileBatch();
+                };
+                
+                p.draw = function() {
+                    p.clear();
+                    
+                    // Add new tiles occasionally
+                    if (p.frameCount % 10 === 0 && pendingTiles.length < 10) {
+                        addNewTileBatch();
+                    }
+                    
+                    // Process pending tiles
+                    processPendingTiles();
+                    
+                    // Draw all tiles
+                    drawTiles();
+                    
+                    // Draw golden ratio spiral at mouse position
+                    drawGoldenSpiral(p, p.mouseX, p.mouseY, 5, 0.08);
+                };
+                
+                function addNewTileBatch() {
+                    // Add 2-5 new tiles
+                    const count = Math.floor(p.random(2, 6));
+                    
+                    for (let i = 0; i < count; i++) {
+                        // Try to find an empty spot near existing tiles
+                        const tile = findEmptyTileNearActive();
+                        if (tile) {
+                            // Generate a color using golden ratio
+                            hue += goldenRatio;
+                            hue %= 1;
+                            
+                            // Choose a color - either from primary colors or a generated one
+                            let color;
+                            if (p.random() < 0.7) {
+                                // Use one of the primary brand colors
+                                color = primaryColors[Math.floor(p.random(primaryColors.length))];
+                            } else {
+                                // Generate a color based on golden ratio
+                                color = p.color(p.map(hue, 0, 1, 0, 360), 70, 90, 70);
+                            }
+                            
+                            // Add to pending queue for animation
+                            pendingTiles.push({
+                                x: tile.x,
+                                y: tile.y,
+                                color: color
+                            });
+                        }
+                    }
+                }
+                
+                function findEmptyTileNearActive() {
+                    // If no active tiles yet, start from center
+                    let activeTiles = [];
+                    
+                    for (let x = 0; x < columns; x++) {
+                        for (let y = 0; y < rows; y++) {
+                            if (tiles[x][y].active) {
+                                activeTiles.push({x, y});
+                            }
+                        }
+                    }
+                    
+                    if (activeTiles.length === 0) {
+                        // Start in the center
+                        return {
+                            x: Math.floor(columns / 2),
+                            y: Math.floor(rows / 2)
+                        };
+                    }
+                    
+                    // Pick a random active tile
+                    const sourceTile = activeTiles[Math.floor(p.random(activeTiles.length))];
+                    
+                    // Look for empty neighbors
+                    const directions = [
+                        {dx: -1, dy: 0},
+                        {dx: 1, dy: 0},
+                        {dx: 0, dy: -1},
+                        {dx: 0, dy: 1},
+                        {dx: -1, dy: -1},
+                        {dx: 1, dy: 1},
+                        {dx: -1, dy: 1},
+                        {dx: 1, dy: -1}
+                    ];
+                    
+                    // Shuffle directions for more organic growth
+                    shuffleArray(directions);
+                    
+                    for (const dir of directions) {
+                        const nx = sourceTile.x + dir.dx;
+                        const ny = sourceTile.y + dir.dy;
+                        
+                        // Check bounds
+                        if (nx >= 0 && nx < columns && ny >= 0 && ny < rows) {
+                            // Check if empty
+                            if (!tiles[nx][ny].active) {
+                                return {x: nx, y: ny};
+                            }
+                        }
+                    }
+                    
+                    // If no empty neighbors found, look for any empty tile
+                    const emptyTiles = [];
+                    for (let x = 0; x < columns; x++) {
+                        for (let y = 0; y < rows; y++) {
+                            if (!tiles[x][y].active) {
+                                emptyTiles.push({x, y});
+                            }
+                        }
+                    }
+                    
+                    if (emptyTiles.length > 0) {
+                        return emptyTiles[Math.floor(p.random(emptyTiles.length))];
+                    }
+                    
+                    return null; // No empty tiles left
+                }
+                
+                function processPendingTiles() {
+                    if (pendingTiles.length > 0) {
+                        const tile = pendingTiles.shift();
+                        tiles[tile.x][tile.y].active = true;
+                        tiles[tile.x][tile.y].color = tile.color;
+                    }
+                }
+                
+                function drawTiles() {
+                    for (let x = 0; x < columns; x++) {
+                        for (let y = 0; y < rows; y++) {
+                            const tile = tiles[x][y];
+                            
+                            if (tile.active) {
+                                // Animate tile appearance
+                                if (tile.size < tile.targetSize) {
+                                    tile.size += 0.5;
+                                }
+                                
+                                if (tile.opacity < tile.targetOpacity) {
+                                    tile.opacity += 0.05;
+                                }
+                                
+                                // Calculate position
+                                const posX = x * tileSize;
+                                const posY = y * tileSize;
+                                
+                                // Set opacity
+                                tile.color.setAlpha(tile.opacity * 255);
+                                p.fill(tile.color);
+                                p.noStroke();
+                                
+                                // Draw tile with different patterns
+                                switch (tile.pattern) {
+                                    case 0: // Square
+                                        p.rect(
+                                            posX + (tileSize - tile.size) / 2,
+                                            posY + (tileSize - tile.size) / 2,
+                                            tile.size,
+                                            tile.size
+                                        );
+                                        break;
+                                    case 1: // Circle
+                                        p.ellipse(
+                                            posX + tileSize / 2,
+                                            posY + tileSize / 2,
+                                            tile.size,
+                                            tile.size
+                                        );
+                                        break;
+                                    case 2: // Triangle
+                                        p.triangle(
+                                            posX + tileSize / 2,
+                                            posY + (tileSize - tile.size) / 2,
+                                            posX + (tileSize - tile.size) / 2,
+                                            posY + tileSize - (tileSize - tile.size) / 2,
+                                            posX + tileSize - (tileSize - tile.size) / 2,
+                                            posY + tileSize - (tileSize - tile.size) / 2
+                                        );
+                                        break;
+                                    case 3: // Diamond
+                                        p.quad(
+                                            posX + tileSize / 2,
+                                            posY + (tileSize - tile.size) / 2,
+                                            posX + tileSize - (tileSize - tile.size) / 2,
+                                            posY + tileSize / 2,
+                                            posX + tileSize / 2,
+                                            posY + tileSize - (tileSize - tile.size) / 2,
+                                            posX + (tileSize - tile.size) / 2,
+                                            posY + tileSize / 2
+                                        );
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // Draw golden ratio spiral around mouse cursor
+                function drawGoldenSpiral(p, x, y, size, growth) {
+                    p.push();
+                    p.translate(x, y);
+                    p.noFill();
+                    p.stroke(255, 224, 61, 50); // Yellow with low opacity
+                    
+                    let goldenRatio = 1.618;
+                    let angle = 0;
+                    let prevX = 0;
+                    let prevY = 0;
+                    
+                    for (let i = 0; i < 50; i++) {
+                        let radius = size * Math.pow(goldenRatio, growth * i);
+                        let newX = radius * Math.cos(angle);
+                        let newY = radius * Math.sin(angle);
+                        
+                        if (i > 0) {
+                            p.strokeWeight(0.5);
+                            p.line(prevX, prevY, newX, newY);
+                        }
+                        
+                        prevX = newX;
+                        prevY = newY;
+                        angle += 0.1; // Adjust for spiral tightness
+                    }
+                    p.pop();
+                }
+                
+                // Helper function to shuffle array
+                function shuffleArray(array) {
+                    for (let i = array.length - 1; i > 0; i--) {
+                        const j = Math.floor(p.random(i + 1));
+                        [array[i], array[j]] = [array[j], array[i]];
+                    }
+                }
+                
+                // Handle window resize
+                p.windowResized = function() {
+                    p.resizeCanvas(p.windowWidth, p.windowHeight);
+                    
+                    // Recalculate columns and rows
+                    const newColumns = Math.ceil(window.innerWidth / tileSize);
+                    const newRows = Math.ceil(window.innerHeight / tileSize);
+                    
+                    // Resize tiles array
+                    for (let x = 0; x < newColumns; x++) {
+                        if (!tiles[x]) tiles[x] = [];
+                        for (let y = 0; y < newRows; y++) {
+                            if (!tiles[x][y]) {
+                                tiles[x][y] = {
+                                    active: false,
+                                    color: null,
+                                    size: 0,
+                                    targetSize: tileSize,
+                                    opacity: 0,
+                                    targetOpacity: p.random(0.2, 0.7),
+                                    pattern: Math.floor(p.random(4))
+                                };
+                            }
+                        }
+                    }
+                };
+            };
+        }
+        
+        // Initialize p5.js sketch
+        new p5(createMosaicSketch());
+        
+        // Interactive company cards
+        const companyCards = document.querySelectorAll('.company-card');
+        
+        companyCards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                // Add slight rotation on hover
+                card.style.transform = `translateY(-8px) rotate(${Math.random() * 2 - 1}deg)`;
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                // Reset transform on mouse leave
+                card.style.transform = '';
+            });
+        });
+        
+        // Section animations on scroll
+        const sections = document.querySelectorAll('section');
+        
+        function checkScroll() {
+            const triggerBottom = window.innerHeight * 0.8;
+            
+            sections.forEach(section => {
+                const sectionTop = section.getBoundingClientRect().top;
+                
+                if (sectionTop < triggerBottom) {
+                    section.style.opacity = '1';
+                    section.style.transform = 'translateY(0)';
+                }
+            });
+        }
+        
+        // Apply initial styles for scroll animation
+        sections.forEach(section => {
+            if (section !== document.querySelector('.hero')) {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(20px)';
+                section.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+            }
+        });
+        
+        // Check scroll position on load and scroll
+        window.addEventListener('load', checkScroll);
+        window.addEventListener('scroll', checkScroll);
+    </script>
+</body>
+</html>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="custom-cursor">
+        <div class="cursor-dot"></div>
+    </div>
+    
+    <!-- p5.js Container -->
+    <div class="p5-container" id="p5-container"></div>
+    
+    <!-- Header -->
+    <header class="nav">
+        <div class="container nav-container">
+            <a href="#" class="logo">
+                <span></span>
+                Mirth n Mosaic
+            </a>
+            <div class="nav-items">
+                <a href="#about" class="nav-link">About</a>
+                <a href="#portfolio" class="nav-link">Companies</a>
+                <a href="#values" class="nav-link">Values</a>
+                <a href="#contact" class="nav-link">Contact</a>
+            </div>
+            <div class="menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-grid">
+            <!-- Grid lines (created with JS) -->
+        </div>
+        <div class="hero-sketch"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">Innovation Through Harmony</h1>
+            <p class="hero-subtitle">We blend timeless principles with cutting-edge technology to create ecommerce solutions that are both functional and beautiful.</p>
+            <div class="hero-cta">
+                <a href="#portfolio" class="btn btn-primary">Discover Our Companies</a>
+                <a href="#contact" class="btn btn-secondary">Connect With Us</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- About Section -->
+    <section class="about" id="about">
+        <div class="container about-container">
+            <div class="about-text">
+                <h2 class="section-title">The Science of Commerce</h2>
+                <p>Mirth n Mosaic draws inspiration from the Renaissance ideal of merging art and science. Like da Vinci's anatomical studies revealed the inner workings of humanity, we dissect the structure of commerce to create more perfect systems.</p>
+                <p>Our name reflects our dual nature: "Mirth" represents the joy and satisfaction our solutions bring, while "Mosaic" embodies our diverse portfolio of companies working in harmony toward a unified vision.</p>
+                <p>As a parent company, we cultivate pioneering ecommerce technologies through a blend of rigorous analysis and inventive design, balancing mathematical precision with intuitive interfaces.</p>
+            </div>
+            <div class="about-image">
+                <img src="/api/placeholder/600/400" alt="Mirth n Mosaic conceptual illustration">
+            </div>
+        </div>
+        <div class="about-notes"></div>
+    </section>
+    
+    <!-- Portfolio Section -->
+    <section class="portfolio" id="portfolio">
+        <div class="container">
+            <h2 class="section-title">Our Family of Companies</h2>
+            <div class="companies-grid">
+                <div class="company-card">
+                    <span class="company-number">01</span>
+                    <svg class="company-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="8" stroke="#FFE03D" stroke-width="1.5"/>
+                        <path d="M17 17L20 20" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M9 10H15" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M12 7V13" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <h3 class="company-title">CheckoutFlow</h3>
+                    <p class="company-description">A revolutionary payment system that combines algorithmic precision with intuitive design, reducing friction and increasing conversion rates through a mathematically optimized checkout experience.</p>
+                    <a href="#" class="company-link">Explore CheckoutFlow</a>
+                </div>
+                <div class="company-card">
+                    <span class="company-number">02</span>
+                    <svg class="company-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="3" y="6" width="18" height="12" stroke="#FFE03D" stroke-width="1.5"/>
+                        <path d="M7 10L7 14" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M12 8V16" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M17 12L17 16" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <h3 class="company-title">InventoryPulse</h3>
+                    <p class="company-description">AI-powered inventory management system inspired by natural proportions, creating a perfect balance between stock levels and demand through predictive algorithms with visual precision.</p>
+                    <a href="#" class="company-link">Explore InventoryPulse</a>
+                </div>
+                <div class="company-card">
+                    <span class="company-number">03</span>
+                    <svg class="company-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="9" stroke="#FFE03D" stroke-width="1.5"/>
+                        <path d="M12 8V16" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M16 12H8" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
+                        <circle cx="12" cy="12" r="2" stroke="#FFE03D" stroke-width="1.5"/>
+                    </svg>
+                    <h3 class="company-title">MarketMetrics</h3>
+                    <p class="company-description">Analytics platform that visualizes complex data patterns using golden ratio proportions, transforming raw numbers into intuitive dashboards that reveal hidden insights and opportunities.</p>
+                    <a href="#" class="company-link">Explore MarketMetrics</a>
+                </div>
+                <div class="company-card">
+                    <span class="company-number">04</span>
+                    <svg class="company-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="9" cy="9" r="4" stroke="#FFE03D" stroke-width="1.5"/>
+                        <path d="M15 8H19" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M17 6V10" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M16 16L20 20" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M3 19C3 15.6863 5.68629 13 9 13H13C16.3137 13 19 15.6863 19 19V20H3V19Z" stroke="#FFE03D" stroke-width="1.5"/>
+                    </svg>
+                    <h3 class="company-title">PersonaMatch</h3>
+                    <p class="company-description">Personalization engine that studies customer behavior like anatomical drawings, creating detailed profiles and tailored experiences with the precision of Vitruvian proportions.</p>
+                    <a href="#" class="company-link">Explore PersonaMatch</a>
+                </div>
+            </div>
+        </div>
+        <div class="portfolio-sketch"></div>
+    </section>
+    
+    <!-- Values Section -->
+    <section class="values" id="values">
+        <div class="container values-container">
+            <h2 class="section-title">Principles That Guide Us</h2>
+            <div class="values-grid">
+                <div class="value-item">
+                    <span class="value-number">01</span>
+                    <svg class="value-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8 12H16" stroke="#6A5ACD" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M12 16V8" stroke="#6A5ACD" stroke-width="1.5" stroke-linecap="round"/>
+                        <circle cx="12" cy="12" r="9" stroke="#6A5ACD" stroke-width="1.5"/>
+                    </svg>
+                    <h3 class="value-title">Artful Innovation</h3>
+                    <p class="value-description">We approach problems with the curious mind of an inventor, drawing connections between seemingly unrelated fields to create novel solutions.</p>
+                </div>
+                <div class="value-item">
+                    <span class="value-number">02</span>
+                    <svg class="value-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="4" y="4" width="16" height="16" rx="2" stroke="#6A5ACD" stroke-width="1.5"/>
+                        <path d="M4 12H20" stroke="#6A5ACD" stroke-width="1.5"/>
+                        <path d="M12 4V20" stroke="#6A5ACD" stroke-width="1.5"/>
+                    </svg>
+                    <h3 class="value-title">Golden Proportion</h3>
+                    <p class="value-description">We believe in balance between form and function, creating systems with mathematical precision that also feel intuitive and harmonious.</p>
+                </div>
+                <div class="value-item">
+                    <span class="value-number">03</span>
+                    <svg class="value-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="9" stroke="#6A5ACD" stroke-width="1.5"/>
+                        <circle cx="12" cy="12" r="5" stroke="#6A5ACD" stroke-width="1.5"/>
+                        <path d="M12 3V21" stroke="#6A5ACD" stroke-width="1.5" stroke-dasharray="1 3"/>
+                        <path d="M3 12H21" stroke="#6A5ACD" stroke-width="1.5" stroke-dasharray="1 3"/>
+                    </svg>
+                    <h3 class="value-title">Analytical Curiosity</h3>
+                    <p class="value-description">Like da Vinci's scientific approach to art, we meticulously study commerce patterns to understand the underlying principles that drive success.</p>
+                </div>
+                <div class="value-item">
+                    <span class="value-number">04</span>
+                    <svg class="value-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 3L4 9V21H20V9L12 3Z" stroke="#6A5ACD" stroke-width="1.5"/>
+                        <path d="M16 13H8V21H16V13Z" stroke="#6A5ACD" stroke-width="1.5"/>
+                        <path d="M12 13V21" stroke="#6A5ACD" stroke-width="1.5"/>
+                    </svg>
+                    <h3 class="value-title">Sustainable Design</h3>
+                    <p class="value-description">We create systems built to last, with modular components and adaptable architectures that can evolve with changing market conditions.</p>
+                </div>
+            </div>
+        </div>
+        <div class="values-sketch"></div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="cta-pattern"></div>
+        <div class="container cta-container">
+            <h2 class="cta-title">Ready to Transform Your Ecommerce Experience?</h2>
+            <p class="cta-text">Discover how our family of companies can bring mathematical precision and artistic beauty to your digital commerce strategy.</p>
+            <a href="#contact" class="btn btn-primary">Connect With Us</a>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h3>Mirth n Mosaic</h3>
+                    <p>Elevating ecommerce technology through a perfect fusion of classical principles and modern innovation.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-nav">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#portfolio">Our Companies</a></li>
+                        <li><a href="#values">Our Values</a></li>
+                        <li><a href="#careers">Careers</a></li>
+                        <li><a href="#news">News & Insights</a></li>
+                    </ul>
+                </div>
+                <div class="footer-nav">
+                    <h4>Our Companies</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">CheckoutFlow</a></li>
+                        <li><a href="#">InventoryPulse</a></li>
+                        <li><a href="#">MarketMetrics</a></li>
+                        <li><a href="#">PersonaMatch</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h4>Contact Us</h4>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Innovation Way, Tech Hub, CA 94105</li>
+                        <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
+                        <li><i class="fas fa-envelope"></i> info@mirthnmosaic.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Mirth n Mosaic. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mirth n Mosaic | Innovation Through Harmony</title>
+    <meta name="description" content="Mirth n Mosaic blends classical inspiration with modern technological precision to create innovative ecommerce solutions.">
+    
+    <!-- Schema.org markup for organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Mirth n Mosaic",
+      "url": "https://mirthnmosaic.com",
+      "logo": "https://mirthnmosaic.com/images/logo.png",
+      "description": "Mirth n Mosaic is the parent company of several innovative ecommerce technology companies, bringing joy and variety to digital commerce.",
+      "sameAs": [
+        "https://www.linkedin.com/company/mirthnmosaic",
+        "https://twitter.com/mirthnmosaic",
+        "https://www.facebook.com/mirthnmosaic"
+      ]
+    }
+    </script>
+    
+    <!-- Custom CSS -->
+    <style>
+        /* Base Variables */
+        :root {
+            --parchment: #F5F2E9;
+            --ink: #2C2825;
+            --accent-gold: #D4AF37;
+            --accent-blue: #1E3F66;
+            --accent-red: #8C1C13;
+            --te-yellow: #FFE03D;
+            --te-gray: #E5E5E5;
+            --te-black: #1A1A1A;
+            
+            --font-serif: 'EB Garamond', Georgia, serif;
+            --font-sans: 'Space Mono', monospace;
+            --line-height: 1.6;
+            
+            --grid-size: 8px;
+            --golden-ratio: 1.618;
+        }
+        
+        /* Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* Base Typography */
+        body {
+            font-family: var(--font-serif);
+            font-size: 16px;
+            line-height: var(--line-height);
+            color: var(--ink);
+            background-color: var(--parchment);
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-sans);
+            font-weight: 400;
+            letter-spacing: -0.02em;
+        }
+        
+        /* Grid System */
+        .grid {
+            display: grid;
+            gap: calc(var(--grid-size) * 2);
+        }
+        
+        .container {
+            width: 92%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 calc(var(--grid-size) * 2);
+        }
+        
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: calc(var(--grid-size) * 3) 0;
+            z-index: 1000;
+            mix-blend-mode: difference;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-family: var(--font-sans);
+            font-size: calc(var(--grid-size) * 3);
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: calc(var(--grid-size) * 1.5);
+        }
+        
+        .logo span {
+            display: inline-block;
+            width: calc(var(--grid-size) * 4);
+            height: calc(var(--grid-size) * 4);
+            border: 2px solid var(--te-yellow);
+            position: relative;
+        }
+        
+        .logo span::before {
+            content: '';
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            background-color: var(--te-yellow);
+            top: 25%;
+            left: 25%;
+        }
+        
+        .nav-items {
+            display: flex;
+            gap: calc(var(--grid-size) * 4);
+        }
+        
+        .nav-link {
+            font-family: var(--font-sans);
+            font-size: calc(var(--grid-size) * 1.5);
+            color: white;
+            text-decoration: none;
+            text-transform: uppercase;
+            position: relative;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 1px;
+            bottom: -4px;
+            left: 0;
+            background-color: white;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .menu-toggle {
+            display: none;
+            width: calc(var(--grid-size) * 4);
+            height: calc(var(--grid-size) * 3);
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+        
+        .menu-toggle span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            background-color: white;
+            transition: all 0.3s ease;
+        }
+        
+        /* Hero Section */
+        .hero {
+            position: relative;
+            height: 100vh;
+            background-color: var(--te-black);
+            color: var(--parchment);
+            overflow: hidden;
+        }
+        
+        .hero-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(16, 1fr);
+            grid-template-rows: repeat(16, 1fr);
+            opacity: 0.1;
+            pointer-events: none;
+        }
+        
+        .hero-grid-line {
+            background-color: var(--te-gray);
+        }
+        
+        .hero-grid-line-h {
+            height: 1px;
+            width: 100%;
+            grid-column: 1 / -1;
+        }
+        
+        .hero-grid-line-v {
+            width: 1px;
+            height: 100%;
+            grid-row: 1 / -1;
+        }
+        
+        .hero-content {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 90%;
+            max-width: 800px;
+            z-index: 2;
+        }
+        
+        .hero-title {
+            font-size: calc(var(--grid-size) * 7);
+            line-height: 1.2;
+            margin-bottom: calc(var(--grid-size) * 4);
+            position: relative;
+        }
+        
+        .hero-title::after {
+            content: '';
+            position: absolute;
+            width: calc(var(--grid-size) * 12);
+            height: 2px;
+            background-color: var(--te-yellow);
+            bottom: calc(var(--grid-size) * -2);
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .hero-subtitle {
+            font-family: var(--font-serif);
+            font-size: calc(var(--grid-size) * 2.5);
+            line-height: 1.5;
+            margin-bottom: calc(var(--grid-size) * 6);
+            font-weight: 400;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .hero-sketch {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0.07;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'%3E%3Cpath fill='none' stroke='%23D4AF37' stroke-width='1' d='M500,100 C600,300 700,400 900,500 C700,600 600,700 500,900 C400,700 300,600 100,500 C300,400 400,300 500,100 Z'/%3E%3Cpath fill='none' stroke='%23D4AF37' stroke-width='1' d='M500,200 C575,350 650,425 800,500 C650,575 575,650 500,800 C425,650 350,575 200,500 C350,425 425,350 500,200 Z'/%3E%3Cpath fill='none' stroke='%23D4AF37' stroke-width='1' d='M500,300 C550,400 600,450 700,500 C600,550 550,600 500,700 C450,600 400,550 300,500 C400,450 450,400 500,300 Z'/%3E%3Ccircle cx='500' cy='500' r='50' fill='none' stroke='%23D4AF37' stroke-width='1'/%3E%3Cline x1='0' y1='500' x2='1000' y2='500' stroke='%23D4AF37' stroke-width='0.5'/%3E%3Cline x1='500' y1='0' x2='500' y2='1000' stroke='%23D4AF37' stroke-width='0.5'/%3E%3C/svg%3E");
+        }
+        
+        .hero-cta {
+            display: inline-flex;
+            gap: calc(var(--grid-size) * 3);
+        }
+        
+        .btn {
+            font-family: var(--font-sans);
+            font-size: calc(var(--grid-size) * 1.5);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: calc(var(--grid-size) * 1.5) calc(var(--grid-size) * 3);
+            border: 1px solid;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            border-color: var(--te-yellow);
+            color: var(--te-yellow);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--te-yellow);
+            color: var(--te-black);
+        }
+        
+        .btn-secondary {
+            border-color: var(--parchment);
+            color: var(--parchment);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--parchment);
+            color: var(--te-black);
+        }
+        
+        /* About Section */
+        .about {
+            padding: calc(var(--grid-size) * 20) 0;
+            position: relative;
+        }
+        
+        .about-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: calc(var(--grid-size) * 10);
+            align-items: center;
+        }
+        
+        .section-title {
+            font-family: var(--font-sans);
+            font-size: calc(var(--grid-size) * 5);
+            margin-bottom: calc(var(--grid-size) * 5);
+            position: relative;
+            line-height: 1.2;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            width: calc(var(--grid-size) * 8);
+            height: 2px;
+            background-color: var(--accent-gold);
+            bottom: calc(var(--grid-size) * -2);
+            left: 0;
+        }
+        
+        .about-text p {
+            font-size: calc(var(--grid-size) * 2.25);
+            margin-bottom: calc(var(--grid-size) * 3);
+        }
+        
+        .about-image {
+            position: relative;
+        }
+        
+        .about-image::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 1px solid var(--accent-gold);
+            top: calc(var(--grid-size) * 2);
+            left: calc(var(--grid-size) * 2);
+            z-index: 1;
+        }
+        
+        .about-image img {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: auto;
+            display: block;
+            box-shadow: 0 calc(var(--grid-size) * 2) calc(var(--grid-size) * 4) rgba(0,0,0,0.1);
+        }
+        
+        .about-notes {
+            position: absolute;
+            width: calc(var(--grid-size) * 30);
+            transform: rotate(-5deg);
+            top: calc(var(--grid-size) * 15);
+            right: calc(var(--grid-size) * 5);
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        /* Portfolio Section */
+        .portfolio {
+            padding: calc(var(--grid-size) * 20) 0;
+            background-color: var(--te-black);
+            color: var(--parchment);
+            position: relative;
+        }
+        
+        .portfolio .section-title {
+            color: var(--parchment);
+            margin-bottom: calc(var(--grid-size) * 8);
+            text-align: center;
+        }
+        
+        .portfolio .section-title::after {
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .companies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(calc(var(--grid-size) * 35), 1fr));
+            gap: calc(var(--grid-size) * 4);
+        }
+        
+        .company-card {
+            border: 1px solid var(--te-gray);
+            padding: calc(var(--grid-size) * 4);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .company-card:hover {
+            border-color: var(--te-yellow);
+            transform: translateY(calc(var(--grid-size) * -1));
+        }
+        
+        .company-card:hover .company-icon {
+            transform: rotate(15deg) scale(1.1);
+        }
+        
+        .company-number {
+            font-family: var(--font-sans);
+            font-size: calc(var(--grid-size) * 1.5);
+            color: var(--te-gray);
+            margin-bottom: calc(var(--grid-size) * 3);
+            display: block;
+        }
+        
+        .company-icon {
+            width: calc(var(--grid-size) * 6);
+            height: calc(var(--grid-size) * 6);
+            margin-bottom: calc(var(--grid-size) * 4);
+            transition: all 0.3s ease;
+            transform-origin: center;
+        }
+        
+        .company-title {
+            font-family: var(--font-sans);
+            font-size: calc(var(--grid-size) * 3);
+            margin-bottom: calc(var(--grid-size) * 2);
+            line-height: 1.2;
+        }
+        
+        .company-description {
+            font-size: calc(var(--grid-size) * 2);
+            line-height: var(--line-height);
+            flex-grow: 1;
+            margin-bottom: calc(var(--grid-size) * 3);
+        }
+        
+        .company-link {
+            font-family: var(--font-sans);
+            font-size: calc(var(--grid-size) * 1.5);
+            color: var(--te-yellow);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            align-self: flex-start;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .company-link::after {
+            content: '→';
+            margin-left: calc(var(--grid-size) * 1);
+            transition: margin-left 0.3s ease;
+        }
+        
+        .company-link:hover {
+            color: var(--parchment);
+        }
+        
+        .company-link:hover::after {
+            margin-left: calc(var(--grid-size) * 1.5);
+        }
+        
+        .portfolio-sketch {
+            position: absolute;
+            bottom: calc(var(--grid-size) * 10);
+            left: calc(var(--grid-size) * 5);
+            width: calc(var(--grid-size) * 25);
+            height: auto;
+            opacity: 0.05;
+            pointer-events: none;
+        }
+        
+        /* Values Section */
+        .values {
+            padding: calc(var(--grid-size) * 20) 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .values-container {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .values .section-title {
+            text-align: center;
+            margin-bottom: calc(var(--grid-size) * 10);
+        }
+        
+        .values .section-title::after {
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(calc(var(--grid-size) * 30), 1fr));
+            gap: calc(var(--grid-size) * 5);
+        }
+        
+        .value-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: calc(var(--grid-size) * 4);
+            position: relative;
+        }
+        
+        .value-item::before {
+            content: '';
+            position: absolute;
+            width: 1px;
+            height: 100%;
+            background-color: var(--accent-gold);
+            opacity: 0.3;
+            left: 0;
+            top: 0;
+        }
+        
+        .value-number {
+            font-family: var(--font-sans);
+            font-size: calc(var(--grid-size) * 5);
+            color: var(--accent-gold);
+            opacity: 0.2;
+            margin-bottom: calc(var(--grid-size) * 2);
+        }
+        
+        .value-icon {
+            width: calc(var(--grid-size) * 8);
+            height: calc(var(--grid-size) * 8);
+            margin-bottom: calc(var(--grid-size) * 3);
+        }
+        
+        .value-title {
+            font-family: var(--font-sans);
+            font-size: calc(var(--grid-size) * 2.5);
+            margin-bottom: calc(var(--grid-size) * 2);
+        }
+        
+        .value-description {
+            font-size: calc(var(--grid-size) * 2);
+        }
+        
+        .values-sketch {
+            position: absolute;
+            width: calc(var(--grid-size) * 60);
+            height: calc(var(--grid-size) * 60);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.03;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 500'%3E%3Ccircle cx='250' cy='250' r='200' fill='none' stroke='%23000' stroke-width='1'/%3E%3Ccircle cx='250' cy='250' r='150' fill='none' stroke='%23000' stroke-width='1'/%3E%3Ccircle cx='250' cy='250' r='100' fill='none' stroke='%23000' stroke-width='1'/%3E%3Ccircle cx='250' cy='250' r='50' fill='none' stroke='%23000' stroke-width='1'/%3E%3Cline x1='50' y1='250' x2='450' y2='250' stroke='%23000' stroke-width='1'/%3E%3Cline x1='250' y1='50' x2='250' y2='450' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        /* CTA Section */
+        .cta {
+            padding: calc(var(--grid-size) * 15) 0;
+            background-color: var(--te-yellow);
+            color: var(--te-black);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .cta-title {
+            font-family: var(--font-sans);
+            font-size: calc(var(--grid-size) * 5);
+            margin-bottom: calc(var(--grid-size) * 3);
+            max-width: 800px;
+            line-height: 1.2;
+        }
+        
+        .cta-text {
+            font-size: calc(var(--grid-size) * 2.25);
+            max-width: 600px;
+            margin-bottom: calc(var(--grid-size) * 6);
+        }
+        
+        .cta .btn-primary {
+            border-color: var(--te-black);
+            color: var(--te-black);
+        }
+        
+        .cta .btn-primary:hover {
+            background-color: var(--te-black);
+            color: var(--te-yellow);
+        }
+        
+        .cta-pattern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0.1;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Crect width='20' height='20' fill='none'/%3E%3Cpath d='M0,10 L20,10 M10,0 L10,20' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E");
+            background-size: calc(var(--grid-size) * 2) calc(var(--grid-size) * 2);
+            pointer-events: none;
+        }
+        
+        /* Footer */
+        .footer {
+            padding: calc(var(--grid-size) * 10) 0 calc(var(--grid-size) * 5);
+            background-color: var(--te-black);
+            color: var(--parchment);
+        }
+        
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: calc(var(--grid-size) * 5);
+            margin-bottom: calc(var(--grid-size) * 10);
+        }
+        
+        .footer-brand h3 {
+            font-family: var(--font-sans);
+            font-size: calc(var(--grid-size) * 3);
+            margin-bottom: calc(var(--grid-size) * 3);
+        }
+        
+        .footer-brand p {
+            font-size: calc(var(--grid-size) * 2);
+            margin-bottom: calc(var(--grid-size) * 4);
+        }
+        
+        .social-links {
+            display: flex;
+            gap: calc(var(--grid-size) * 2);
+        }
+        
+        .social-link {
+            width: calc(var(--grid-size) * 4);
+            height: calc(var(--grid-size) * 4);
+            border: 1px solid var(--te-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--te-gray);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .social-link:hover {
+            border-color: var(--te-yellow);
+            color: var(--te-yellow);
+            transform: translateY(calc(var(--grid-size) * -0.5));
+        }
+        
+        .footer-nav h4, .footer-contact h4 {
+            font-family: var(--font-sans);
+            font-size: calc(var(--grid-size) * 2);
+            margin-bottom: calc(var(--grid-size) * 3);
+            color: var(--te-gray);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: calc(var(--grid-size) * 1.5);
+        }
+        
+        .footer-links a {
+            font-size: calc(var(--grid-size) * 2);
+            color: var(--parchment);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: var(--te-yellow);
+            padding-left: calc(var(--grid-size) * 0.5);
+        }
+        
+        .contact-info {
+            list-style: none;
+        }
+        
+        .contact-info li {
+            display: flex;
+            gap: calc(var(--grid-size) * 1.5);
+            margin-bottom: calc(var(--grid-size) * 2);
+            font-size: calc(var(--grid-size) * 2);
+            color: var(--parchment);
+        }
+        
+        .copyright {
+            text-align: center;
+            font-size: calc(var(--grid-size) * 1.5);
+            color: var(--te-gray);
+            border-top: 1px solid rgba(229, 229, 229, 0.1);
+            padding-top: calc(var(--grid-size) * 3);
+        }
+        
+        /* Canvas styling */
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        /* Canvas container styling */
+        .p5-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        /* Vitruvian cursor styling */
+        .custom-cursor {
+            position: fixed;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid var(--accent-gold);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+        }
+        
+        .cursor-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 4px;
+            height: 4px;
+            background-color: var(--te-yellow);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 1024px) {
+            :root {
+                --grid-size: 7px;
+            }
+            
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                row-gap: calc(var(--grid-size) * 8);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            :root {
+                --grid-size: 6px;
+            }
+            
+            .nav-items {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 70%;
+                height: 100vh;
+                background-color: var(--te-black);
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                transition: right 0.3s ease;
+                padding: calc(var(--grid-size) * 5);
+            }
+            
+            .nav-items.active {
+                right: 0;
+            }
+            
+            .menu-toggle {
+                display: flex;
+                z-index: 1001;
+            }
+            
+            .menu-toggle.active span:nth-child(1) {
+                transform: translateY(calc(var(--grid-size) * 1)) rotate(45deg);
+            }
+            
+            .menu-toggle.active span:nth-child(2) {
+                opacity: 0;
+            }
+            
+            .menu-toggle.active span:nth-child(3) {
+                transform: translateY(calc(var(--grid-size) * -1)) rotate(-45deg);
+            }
+            
+            .about-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .about-image {
+                order: -1;
+                margin-bottom: calc(var(--grid-size) * 5);
+            }
+            
+            .companies-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: calc(var(--grid-size) * 8);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            :
