@@ -6,22 +6,8 @@
     <title>Mirth n Mosaic | Innovation Through Harmony</title>
     <meta name="description" content="Mirth n Mosaic blends classical inspiration with modern technological precision to create innovative ecommerce solutions.">
     
-<!--     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "Mirth n Mosaic",
-      "url": "https://mirthnmosaic.com",
-      "logo": "https://mirthnmosaic.com/images/logo.png",
-      "description": "Mirth n Mosaic is the parent company of several innovative ecommerce technology companies, bringing joy and variety to digital commerce.",
-      "sameAs": [
-        "https://www.linkedin.com/company/mirthnmosaic",
-        "https://twitter.com/mirthnmosaic",
-        "https://www.facebook.com/mirthnmosaic"
-      ]
-    }
-    </script> -->
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+
     <style>
         /* Base Variables */
         :root {
@@ -57,7 +43,7 @@
             color: var(--ink);
             background-color: var(--parchment);
             -webkit-font-smoothing: antialiased;
-            overflow-x: hidden;
+            overflow-x: hidden; /* Important for preventing scrollbars from canvas */
         }
         
         h1, h2, h3, h4, h5, h6 {
@@ -87,7 +73,7 @@
             width: 100%;
             padding: calc(var(--grid-size) * 3) 0;
             z-index: 1000;
-            mix-blend-mode: difference;
+            mix-blend-mode: difference; /* This might make nav hard to see over some particle colors */
         }
         
         .nav-container {
@@ -99,7 +85,7 @@
         .logo {
             font-family: var(--font-sans);
             font-size: calc(var(--grid-size) * 3);
-            color: white;
+            color: white; /* Will be inverted by mix-blend-mode */
             text-decoration: none;
             display: flex;
             align-items: center;
@@ -132,7 +118,7 @@
         .nav-link {
             font-family: var(--font-sans);
             font-size: calc(var(--grid-size) * 1.5);
-            color: white;
+            color: white; /* Will be inverted by mix-blend-mode */
             text-decoration: none;
             text-transform: uppercase;
             position: relative;
@@ -166,7 +152,7 @@
             display: block;
             width: 100%;
             height: 2px;
-            background-color: white;
+            background-color: white; /* Will be inverted by mix-blend-mode */
             transition: all 0.3s ease;
         }
         
@@ -174,49 +160,22 @@
         .hero {
             position: relative;
             height: 100vh;
-            background-color: var(--te-black);
+            background-color: var(--te-black); /* Background for the p5 canvas to sit on */
             color: var(--parchment);
-            overflow: hidden;
+            overflow: hidden; /* Ensures canvas doesn't cause scroll */
+            display: flex; /* For centering content */
+            align-items: center; /* For centering content */
+            justify-content: center; /* For centering content */
         }
         
-        .hero-grid {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: grid;
-            grid-template-columns: repeat(16, 1fr);
-            grid-template-rows: repeat(16, 1fr);
-            opacity: 0.1;
-            pointer-events: none;
-        }
-        
-        .hero-grid-line {
-            background-color: var(--te-gray);
-        }
-        
-        .hero-grid-line-h {
-            height: 1px;
-            width: 100%;
-            grid-column: 1 / -1;
-        }
-        
-        .hero-grid-line-v {
-            width: 1px;
-            height: 100%;
-            grid-row: 1 / -1;
-        }
+        /* Removed hero-grid as p5 canvas will be the visual focus */
         
         .hero-content {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
+            position: relative; /* Changed from absolute to work with flex layout */
             text-align: center;
             width: 90%;
             max-width: 800px;
-            z-index: 2;
+            z-index: 2; /* Ensure content is above p5 canvas */
         }
         
         .hero-title {
@@ -248,18 +207,7 @@
             margin-right: auto;
         }
         
-        .hero-sketch {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            opacity: 0.07;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000'%3E%3Cpath fill='none' stroke='%23D4AF37' stroke-width='1' d='M500,100 C600,300 700,400 900,500 C700,600 600,700 500,900 C400,700 300,600 100,500 C300,400 400,300 500,100 Z'/%3E%3Cpath fill='none' stroke='%23D4AF37' stroke-width='1' d='M500,200 C575,350 650,425 800,500 C650,575 575,650 500,800 C425,650 350,575 200,500 C350,425 425,350 500,200 Z'/%3E%3Cpath fill='none' stroke='%23D4AF37' stroke-width='1' d='M500,300 C550,400 600,450 700,500 C600,550 550,600 500,700 C450,600 400,550 300,500 C400,450 450,400 500,300 Z'/%3E%3Ccircle cx='500' cy='500' r='50' fill='none' stroke='%23D4AF37' stroke-width='1'/%3E%3Cline x1='0' y1='500' x2='1000' y2='500' stroke='%23D4AF37' stroke-width='0.5'/%3E%3Cline x1='500' y1='0' x2='500' y2='1000' stroke='%23D4AF37' stroke-width='0.5'/%3E%3C/svg%3E");
-        }
+        /* Removed hero-sketch as p5 canvas is the new background */
         
         .hero-cta {
             display: inline-flex;
@@ -299,11 +247,30 @@
             background-color: var(--parchment);
             color: var(--te-black);
         }
+
+        /* p5.js Canvas Container Styling */
+        .p5-container {
+            position: absolute; /* Changed from fixed to be contained within .hero */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1; /* Behind hero-content but above hero background */
+            pointer-events: none; /* Allows clicks to pass through to elements behind if any */
+        }
+
+        /* Ensure canvas itself takes up the container and is behind content */
+        #p5-container canvas {
+            display: block;
+            width: 100% !important; /* Override p5.js inline styles */
+            height: 100% !important; /* Override p5.js inline styles */
+        }
         
         /* About Section */
         .about {
             padding: calc(var(--grid-size) * 20) 0;
             position: relative;
+            background-color: var(--parchment); /* Ensure sections below hero have their own background */
         }
         
         .about-container {
@@ -358,6 +325,9 @@
             height: auto;
             display: block;
             box-shadow: 0 calc(var(--grid-size) * 2) calc(var(--grid-size) * 4) rgba(0,0,0,0.1);
+            /* Fallback for image loading */
+            background: var(--te-gray) url('https://placehold.co/600x400/E5E5E5/2C2825?text=Mirth+n+Mosaic') no-repeat center center;
+            background-size: cover;
         }
         
         .about-notes {
@@ -388,6 +358,7 @@
         .portfolio .section-title::after {
             left: 50%;
             transform: translateX(-50%);
+            background-color: var(--te-yellow); /* Match portfolio theme */
         }
         
         .companies-grid {
@@ -405,6 +376,7 @@
             transition: all 0.3s ease;
             position: relative;
             cursor: pointer;
+            background-color: var(--te-black); /* Ensure cards have background */
         }
         
         .company-card:hover {
@@ -430,6 +402,10 @@
             margin-bottom: calc(var(--grid-size) * 4);
             transition: all 0.3s ease;
             transform-origin: center;
+            color: var(--te-yellow); /* Ensure icons are visible */
+        }
+        .company-icon svg path, .company-icon svg circle, .company-icon svg rect {
+             stroke: var(--te-yellow); /* Explicitly color SVG strokes */
         }
         
         .company-title {
@@ -437,6 +413,7 @@
             font-size: calc(var(--grid-size) * 3);
             margin-bottom: calc(var(--grid-size) * 2);
             line-height: 1.2;
+            color: var(--parchment);
         }
         
         .company-description {
@@ -444,6 +421,7 @@
             line-height: var(--line-height);
             flex-grow: 1;
             margin-bottom: calc(var(--grid-size) * 3);
+            color: var(--te-gray);
         }
         
         .company-link {
@@ -487,6 +465,7 @@
             padding: calc(var(--grid-size) * 20) 0;
             position: relative;
             overflow: hidden;
+            background-color: var(--parchment); /* Ensure section background */
         }
         
         .values-container {
@@ -497,11 +476,13 @@
         .values .section-title {
             text-align: center;
             margin-bottom: calc(var(--grid-size) * 10);
+            color: var(--ink); /* Ensure title is visible */
         }
         
         .values .section-title::after {
             left: 50%;
             transform: translateX(-50%);
+            background-color: var(--accent-gold);
         }
         
         .values-grid {
@@ -542,16 +523,22 @@
             width: calc(var(--grid-size) * 8);
             height: calc(var(--grid-size) * 8);
             margin-bottom: calc(var(--grid-size) * 3);
+            color: var(--accent-blue); /* Ensure icons are visible */
+        }
+         .value-icon svg path, .value-icon svg circle, .value-icon svg rect {
+             stroke: var(--accent-blue); /* Explicitly color SVG strokes */
         }
         
         .value-title {
             font-family: var(--font-sans);
             font-size: calc(var(--grid-size) * 2.5);
             margin-bottom: calc(var(--grid-size) * 2);
+            color: var(--ink);
         }
         
         .value-description {
             font-size: calc(var(--grid-size) * 2);
+            color: var(--ink);
         }
         
         .values-sketch {
@@ -563,7 +550,7 @@
             transform: translate(-50%, -50%);
             opacity: 0.03;
             pointer-events: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 500'%3E%3Ccircle cx='250' cy='250' r='200' fill='none' stroke='%23000' stroke-width='1'/%3E%3Ccircle cx='250' cy='250' r='150' fill='none' stroke='%23000' stroke-width='1'/%3E%3Ccircle cx='250' cy='250' r='100' fill='none' stroke='%23000' stroke-width='1'/%3E%3Ccircle cx='250' cy='250' r='50' fill='none' stroke='%23000' stroke-width='1'/%3E%3Cline x1='50' y1='250' x2='450' y2='250' stroke='%23000' stroke-width='1'/%3E%3Cline x1='250' y1='50' x2='250' y2='450' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 500'%3E%3Ccircle cx='250' cy='250' r='200' fill='none' stroke='%232C2825' stroke-width='1'/%3E%3Ccircle cx='250' cy='250' r='150' fill='none' stroke='%232C2825' stroke-width='1'/%3E%3Ccircle cx='250' cy='250' r='100' fill='none' stroke='%232C2825' stroke-width='1'/%3E%3Ccircle cx='250' cy='250' r='50' fill='none' stroke='%232C2825' stroke-width='1'/%3E%3Cline x1='50' y1='250' x2='450' y2='250' stroke='%232C2825' stroke-width='1'/%3E%3Cline x1='250' y1='50' x2='250' y2='450' stroke='%232C2825' stroke-width='1'/%3E%3C/svg%3E");
             background-size: contain;
             background-position: center;
             background-repeat: no-repeat;
@@ -601,7 +588,7 @@
             margin-bottom: calc(var(--grid-size) * 6);
         }
         
-        .cta .btn-primary {
+        .cta .btn-primary { /* This was btn-secondary in original, making it primary for consistency */
             border-color: var(--te-black);
             color: var(--te-black);
         }
@@ -618,7 +605,7 @@
             top: 0;
             left: 0;
             opacity: 0.1;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Crect width='20' height='20' fill='none'/%3E%3Cpath d='M0,10 L20,10 M10,0 L10,20' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Crect width='20' height='20' fill='none'/%3E%3Cpath d='M0,10 L20,10 M10,0 L10,20' stroke='%231A1A1A' stroke-width='1'/%3E%3C/svg%3E");
             background-size: calc(var(--grid-size) * 2) calc(var(--grid-size) * 2);
             pointer-events: none;
         }
@@ -653,7 +640,7 @@
             gap: calc(var(--grid-size) * 2);
         }
         
-        .social-link {
+        .social-link { /* Added basic styling for potential social icons */
             width: calc(var(--grid-size) * 4);
             height: calc(var(--grid-size) * 4);
             border: 1px solid var(--te-gray);
@@ -663,6 +650,7 @@
             color: var(--te-gray);
             text-decoration: none;
             transition: all 0.3s ease;
+            font-size: calc(var(--grid-size) * 2); /* For icon fonts */
         }
         
         .social-link:hover {
@@ -709,6 +697,11 @@
             font-size: calc(var(--grid-size) * 2);
             color: var(--parchment);
         }
+         /* Basic icon styling if using font awesome or similar */
+        .contact-info li i {
+            width: calc(var(--grid-size) * 2.5); 
+            text-align: center;
+        }
         
         .copyright {
             text-align: center;
@@ -716,26 +709,6 @@
             color: var(--te-gray);
             border-top: 1px solid rgba(229, 229, 229, 0.1);
             padding-top: calc(var(--grid-size) * 3);
-        }
-        
-        /* Canvas styling */
-        canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 0;
-            pointer-events: none;
-        }
-        
-        /* Canvas container styling */
-        .p5-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
         }
         
         /* Vitruvian cursor styling */
@@ -748,7 +721,7 @@
             transform: translate(-50%, -50%);
             pointer-events: none;
             z-index: 9999;
-            mix-blend-mode: difference;
+            mix-blend-mode: difference; /* Cursor will invert colors it passes over */
         }
         
         .cursor-dot {
@@ -757,7 +730,7 @@
             left: 50%;
             width: 4px;
             height: 4px;
-            background-color: var(--te-yellow);
+            background-color: var(--te-yellow); /* Dot color */
             border-radius: 50%;
             transform: translate(-50%, -50%);
         }
@@ -772,7 +745,7 @@
             width: 100%; /* Full width */
             height: 100%; /* Full height */
             overflow: auto; /* Enable scroll if needed */
-            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            background-color: rgba(0,0,0,0.6); /* Darker overlay */
             padding-top: 60px;
         }
 
@@ -780,43 +753,49 @@
             background-color: var(--parchment);
             color: var(--ink);
             margin: 5% auto;
-            padding: 20px;
+            padding: calc(var(--grid-size) * 4);
             border: 1px solid var(--accent-gold);
             width: 80%;
             max-width: 700px;
             border-radius: 8px;
             position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
         
         .modal-content h2 {
             font-family: var(--font-sans);
             color: var(--accent-blue);
             margin-top: 0;
+            margin-bottom: calc(var(--grid-size) * 2);
         }
          .modal-content h3 {
             font-family: var(--font-sans);
             color: var(--ink);
-            margin-top: 1em;
+            margin-top: calc(var(--grid-size) * 2.5);
             font-size: 1.1em;
         }
         .modal-content p, .modal-content ul {
             font-family: var(--font-serif);
             line-height: var(--line-height);
-            margin-bottom: 1em;
+            margin-bottom: calc(var(--grid-size) * 2);
         }
         .modal-content ul {
-            padding-left: 20px;
+            padding-left: calc(var(--grid-size) * 3);
         }
         .modal-content a {
             color: var(--accent-blue);
             text-decoration: underline;
         }
+        .modal-content a:hover {
+            color: var(--accent-red);
+        }
 
         .close-btn {
             color: var(--accent-red);
             float: right;
-            font-size: 28px;
+            font-size: calc(var(--grid-size) * 4);
             font-weight: bold;
+            line-height: 1;
         }
 
         .close-btn:hover,
@@ -829,7 +808,7 @@
         .footer-modal-links {
             text-align: center;
             padding: calc(var(--grid-size) * 2) 0;
-            border-top: 1px solid rgba(229, 229, 229, 0.1);
+            border-top: 1px solid rgba(229, 229, 229, 0.2); /* Slightly more visible line */
             margin-top: calc(var(--grid-size) * 5);
         }
 
@@ -850,10 +829,19 @@
             :root {
                 --grid-size: 7px;
             }
-            
+            .hero-title { font-size: calc(var(--grid-size) * 6); }
+            .hero-subtitle { font-size: calc(var(--grid-size) * 2.25); }
             .footer-grid {
                 grid-template-columns: 1fr 1fr;
                 row-gap: calc(var(--grid-size) * 8);
+            }
+             .about-container {
+                grid-template-columns: 1fr;
+                gap: calc(var(--grid-size) * 6);
+            }
+            .about-image {
+                order: -1; /* Image first on tablet */
+                margin-bottom: calc(var(--grid-size) * 5);
             }
         }
         
@@ -865,15 +853,18 @@
             .nav-items {
                 position: fixed;
                 top: 0;
-                right: -100%;
+                right: -100%; /* Start off-screen */
                 width: 70%;
+                max-width: 300px; /* Max width for menu */
                 height: 100vh;
-                background-color: var(--te-black);
+                background-color: rgba(26, 26, 26, 0.95); /* Slightly transparent TE Black */
+                backdrop-filter: blur(5px);
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
-                transition: right 0.3s ease;
+                transition: right 0.35s cubic-bezier(0.23, 1, 0.32, 1); /* Smoother transition */
                 padding: calc(var(--grid-size) * 5);
+                z-index: 999; /* Below toggle, above content */
             }
             
             .nav-items.active {
@@ -882,11 +873,11 @@
             
             .menu-toggle {
                 display: flex;
-                z-index: 1001;
+                z-index: 1001; /* Above nav items */
             }
             
             .menu-toggle.active span:nth-child(1) {
-                transform: translateY(calc(var(--grid-size) * 1)) rotate(45deg);
+                transform: translateY(calc(var(--grid-size) * 1.1)) rotate(45deg); /* Adjusted for 6px grid */
             }
             
             .menu-toggle.active span:nth-child(2) {
@@ -894,33 +885,41 @@
             }
             
             .menu-toggle.active span:nth-child(3) {
-                transform: translateY(calc(var(--grid-size) * -1)) rotate(-45deg);
-            }
-            
-            .about-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .about-image {
-                order: -1;
-                margin-bottom: calc(var(--grid-size) * 5);
+                transform: translateY(calc(var(--grid-size) * -1.1)) rotate(-45deg); /* Adjusted for 6px grid */
             }
             
             .companies-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr; /* Single column for company cards */
             }
             
             .footer-grid {
                 grid-template-columns: 1fr;
-                gap: calc(var(--grid-size) * 8);
+                gap: calc(var(--grid-size) * 6); /* Reduced gap */
             }
             .modal-content {
                 width: 90%;
+                padding: calc(var(--grid-size) * 3);
             }
+            .hero-title { font-size: calc(var(--grid-size) * 5); }
+            .hero-subtitle { font-size: calc(var(--grid-size) * 2); }
         }
         
         @media (max-width: 480px) {
-            /* Further adjustments for smaller screens if needed */
+             :root {
+                --grid-size: 5.5px; /* Fine-tune for small screens */
+            }
+            .hero-title { font-size: calc(var(--grid-size) * 4.5); }
+            .hero-subtitle { font-size: calc(var(--grid-size) * 1.8); }
+            .btn { font-size: calc(var(--grid-size) * 1.75); padding: calc(var(--grid-size) * 1.25) calc(var(--grid-size) * 2.5); }
+            .section-title { font-size: calc(var(--grid-size) * 4); }
+            .about-text p { font-size: calc(var(--grid-size) * 2); }
+            .company-title { font-size: calc(var(--grid-size) * 2.5); }
+            .company-description { font-size: calc(var(--grid-size) * 1.8); }
+            .value-title { font-size: calc(var(--grid-size) * 2.25); }
+            .value-description { font-size: calc(var(--grid-size) * 1.8); }
+            .cta-title { font-size: calc(var(--grid-size) * 4); }
+            .cta-text { font-size: calc(var(--grid-size) * 2); }
+            .footer-modal-links a { font-size: calc(var(--grid-size) * 1.5); margin: 0 calc(var(--grid-size) * 1); }
         }
     </style>
 </head>
@@ -928,8 +927,6 @@
     <div class="custom-cursor">
         <div class="cursor-dot"></div>
     </div>
-    
-    <div class="p5-container" id="p5-container"></div>
     
     <header class="nav">
         <div class="container nav-container">
@@ -952,15 +949,12 @@
     </header>
     
     <section class="hero">
-        <div class="hero-grid">
-            </div>
-        <div class="hero-sketch"></div>
-        <div class="hero-content">
+        <div class="p5-container" id="p5-container"></div> <div class="hero-content">
             <h1 class="hero-title">Innovation Through Harmony</h1>
             <p class="hero-subtitle">We blend timeless principles with cutting-edge technology to create ecommerce solutions that are both functional and beautiful.</p>
             <div class="hero-cta">
                 <a href="#portfolio" class="btn btn-primary">Discover Our Companies</a>
-<a href="mailto:contact@mirthnmosaic.com" class="btn btn-secondary">Connect With Us</a>
+                <a href="mailto:contact@mirthnmosaic.com" class="btn btn-secondary">Connect With Us</a>
             </div>
         </div>
     </section>
@@ -974,126 +968,82 @@
                 <p>As a parent company, we cultivate pioneering ecommerce technologies through a blend of rigorous analysis and inventive design, balancing mathematical precision with intuitive interfaces.</p>
             </div>
             <div class="about-image">
-                <img src="images/about.png" alt="Mirth n Mosaic conceptual illustration">
+                <img src="images/about.png" alt="Mirth n Mosaic conceptual illustration" onerror="this.onerror=null;this.src='https://placehold.co/600x400/E5E5E5/2C2825?text=Image+Not+Found';">
             </div>
         </div>
-        <div class="about-notes"></div>
-    </section>
+        <div class="about-notes"></div> </section>
     
     <section class="portfolio" id="portfolio">
         <div class="container">
             <h2 class="section-title">Our Family of Companies & Products</h2>
             <div class="companies-grid">
                 <div class="company-card">
-                    <!-- <span class="company-number">01</span>
-                    <svg class="company-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="12" cy="12" r="8" stroke="#FFE03D" stroke-width="1.5"/>
-                        <path d="M17 17L20 20" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
-                        <path d="M9 10H15" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
-                        <path d="M12 7V13" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
-                    </svg>
-                    <h3 class="company-title">CheckoutFlow</h3>
-                    <p class="company-description">A revolutionary payment system that combines algorithmic precision with intuitive design, reducing friction and increasing conversion rates through a mathematically optimized checkout experience.</p>
-                    <a href="#" class="company-link">Explore CheckoutFlow</a>
-                </div>
-                <div class="company-card">
-                    <span class="company-number">02</span>
-                    <svg class="company-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="3" y="6" width="18" height="12" stroke="#FFE03D" stroke-width="1.5"/>
-                        <path d="M7 10L7 14" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
-                        <path d="M12 8V16" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
-                        <path d="M17 12L17 16" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
-                    </svg>
-                    <h3 class="company-title">InventoryPulse</h3>
-                    <p class="company-description">AI-powered inventory management system inspired by natural proportions, creating a perfect balance between stock levels and demand through predictive algorithms with visual precision.</p>
-                    <a href="#" class="company-link">Explore InventoryPulse</a>
-                </div>
-                <div class="company-card">
-                    <span class="company-number">03</span>
-                    <svg class="company-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="12" cy="12" r="9" stroke="#FFE03D" stroke-width="1.5"/>
-                        <path d="M12 8V16" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
-                        <path d="M16 12H8" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
-                        <circle cx="12" cy="12" r="2" stroke="#FFE03D" stroke-width="1.5"/>
-                    </svg>
-                    <h3 class="company-title">MarketMetrics</h3>
-                    <p class="company-description">Analytics platform that visualizes complex data patterns using golden ratio proportions, transforming raw numbers into intuitive dashboards that reveal hidden insights and opportunities.</p>
-                    <a href="#" class="company-link">Explore MarketMetrics</a>
-                </div>
-                <div class="company-card">
-                    <span class="company-number">04</span>
-                    <svg class="company-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="9" cy="9" r="4" stroke="#FFE03D" stroke-width="1.5"/>
-                        <path d="M15 8H19" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
-                        <path d="M17 6V10" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
-                        <path d="M16 16L20 20" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
-                        <path d="M3 19C3 15.6863 5.68629 13 9 13H13C16.3137 13 19 15.6863 19 19V20H3V19Z" stroke="#FFE03D" stroke-width="1.5"/>
-                    </svg>
-                    <h3 class="company-title">PersonaMatch</h3>
-                    <p class="company-description">Personalization engine that studies customer behavior like anatomical drawings, creating detailed profiles and tailored experiences with the precision of Vitruvian proportions.</p>
-                    <a href="#" class="company-link">Explore PersonaMatch</a>
-                </div> -->
-
-                <div class="company-card">
                     <span class="company-number">01</span>
-                    <svg class="company-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M10.59,13.41C11.44,12.57 12,11.35 12,10C12,7.24 7.76,5 5,5C3.54,5 2.22,5.57 1.21,6.45M12,10C12,12.24 16.24,14 19,14C20.46,14 21.78,13.43 22.79,12.55M17.59,18.41C18.44,17.57 19,16.35 19,15C19,12.24 14.76,10 12,10M5,15C5,16.35 5.56,17.57 6.41,18.41L5,20L3.59,18.41C2.56,17.43 2,16.27 2,15C2,12.24 6.24,10 9,10C9.69,10 10.36,10.12 10.97,10.34" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        <circle cx="12" cy="10" r="3" stroke="#FFE03D" stroke-width="1.5"/>
-                        <path d="M9,10 C9,8 10,7 12,7" stroke="#FFE03D" stroke-width="1.5"/>
-                        <path d="M15,10 C15,8 14,7 12,7" stroke="#FFE03D" stroke-width="1.5"/>
-                        <path d="M12,13 C14,13 15,12 15,10" stroke="#FFE03D" stroke-width="1.5"/>
-                         <path d="M12,13 C10,13 9,12 9,10" stroke="#FFE03D" stroke-width="1.5"/>
-                    </svg>
+                    <div class="company-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10.59,13.41C11.44,12.57 12,11.35 12,10C12,7.24 7.76,5 5,5C3.54,5 2.22,5.57 1.21,6.45M12,10C12,12.24 16.24,14 19,14C20.46,14 21.78,13.43 22.79,12.55M17.59,18.41C18.44,17.57 19,16.35 19,15C19,12.24 14.76,10 12,10M5,15C5,16.35 5.56,17.57 6.41,18.41L5,20L3.59,18.41C2.56,17.43 2,16.27 2,15C2,12.24 6.24,10 9,10C9.69,10 10.36,10.12 10.97,10.34" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="12" cy="10" r="3" stroke-width="1.5"/>
+                            <path d="M9,10 C9,8 10,7 12,7" stroke-width="1.5"/>
+                            <path d="M15,10 C15,8 14,7 12,7" stroke-width="1.5"/>
+                            <path d="M12,13 C14,13 15,12 15,10" stroke-width="1.5"/>
+                            <path d="M12,13 C10,13 9,12 9,10" stroke-width="1.5"/>
+                        </svg>
+                    </div>
                     <h3 class="company-title">OctoMindAI</h3>
                     <p class="company-description">Your on-demand AI Automation Studio. OctoMindAI plugs advanced workflows, applications and agents into everyday workflows—slashing busy-work for founders and SMBs while unlocking up to 30× productivity gains. From data-driven decision dashboards to hands-off process bots, we design, deploy, and support AI systems that just work.</p>
                     <a href="#" class="company-link">Explore OctoMindAI</a>
                 </div>
                 <div class="company-card">
                     <span class="company-number">02</span>
-                    <svg class="company-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2L12 5M12 19L12 22M5 12L2 12M22 12L19 12M7.05029 7.05025L4.92908 4.92903M19.0711 19.071L16.9498 16.9497M7.05029 16.9497L4.92908 19.071M19.0711 4.92903L16.9498 7.05025" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
-                        <path d="M9 14C9.5 15.5 10.5 17 12 17C13.5 17 14.5 15.5 15 14C14.5 12.5 13.5 10 12 10C10.5 10 9.5 12.5 9 14Z" stroke="#FFE03D" stroke-width="1.5"/>
-                        <path d="M12 17V19" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
-                    </svg>
+                     <div class="company-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L12 5M12 19L12 22M5 12L2 12M22 12L19 12M7.05029 7.05025L4.92908 4.92903M19.0711 19.071L16.9498 16.9497M7.05029 16.9497L4.92908 19.071M19.0711 4.92903L16.9498 7.05025" stroke-width="1.5" stroke-linecap="round"/>
+                            <path d="M9 14C9.5 15.5 10.5 17 12 17C13.5 17 14.5 15.5 15 14C14.5 12.5 13.5 10 12 10C10.5 10 9.5 12.5 9 14Z" stroke-width="1.5"/>
+                            <path d="M12 17V19" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
                     <h3 class="company-title">IdeaSpark</h3>
                     <p class="company-description">Instant product blueprints for builders. Drop your app idea, and IdeaSpark returns a polished, developer-ready spec (tech stack, user stories, wireframes, and go-to-market notes) in minutes—so you can skip the guesswork and ship faster.</p>
                     <a href="#" class="company-link">Explore IdeaSpark</a>
                 </div>
                 <div class="company-card">
                     <span class="company-number">03</span>
-                    <svg class="company-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2L7 7L12 12L17 7L12 2Z" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M7 7H3V17H7V7Z" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M17 7H21V17H17V7Z" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M7 17L12 22L17 17" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M12 12V22" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+                    <div class="company-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L7 7L12 12L17 7L12 2Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M7 7H3V17H7V7Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M17 7H21V17H17V7Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M7 17L12 22L17 17" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 12V22" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
                     <h3 class="company-title">AdAlchemist</h3>
                     <p class="company-description">Turn raw concepts into gold-standard ad creative. AdAlchemist ingests your offer, audience, and brand voice, then spins up conversion-focused copy, visuals, and A/B test plans—automatically optimized for every channel, from Meta to TikTok.</p>
                     <a href="#" class="company-link">Explore AdAlchemist</a>
                 </div>
                 <div class="company-card">
                     <span class="company-number">04</span>
-                    <svg class="company-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M20 19C20 16.2386 16.4183 14 12 14C7.58172 14 4 16.2386 4 19" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M15 8H17" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
-                        <path d="M7 8H9" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
-                        <path d="M12 4V2" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
-                        <path d="M12 20V22" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
-                        <path d="M4.92896 4.92896L3.51475 3.51475" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
-                        <path d="M20.4852 20.4853L19.071 19.0711" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
-                        <path d="M4.92896 19.0711L3.51475 20.4853" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
-                        <path d="M20.4852 3.51475L19.071 4.92896" stroke="#FFE03D" stroke-width="1.5" stroke-linecap="round"/>
-                    </svg>
+                    <div class="company-icon">
+                       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M20 19C20 16.2386 16.4183 14 12 14C7.58172 14 4 16.2386 4 19" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M15 8H17" stroke-width="1.5" stroke-linecap="round"/>
+                            <path d="M7 8H9" stroke-width="1.5" stroke-linecap="round"/>
+                            <path d="M12 4V2" stroke-width="1.5" stroke-linecap="round"/>
+                            <path d="M12 20V22" stroke-width="1.5" stroke-linecap="round"/>
+                            <path d="M4.92896 4.92896L3.51475 3.51475" stroke-width="1.5" stroke-linecap="round"/>
+                            <path d="M20.4852 20.4853L19.071 19.0711" stroke-width="1.5" stroke-linecap="round"/>
+                            <path d="M4.92896 19.0711L3.51475 20.4853" stroke-width="1.5" stroke-linecap="round"/>
+                            <path d="M20.4852 3.51475L19.071 4.92896" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
                     <h3 class="company-title">AIHeadShots</h3>
                     <p class="company-description">Studio-quality headshots without the studio. Upload a few selfies and receive professional, LinkedIn-ready portraits in under an hour—retouched, backdrop-matched, and royalty-free.</p>
                     <a href="#" class="company-link">Explore AIHeadShots</a>
                 </div>
-                </div>
+            </div>
         </div>
-        <div class="portfolio-sketch"></div>
-    </section>
+        </section>
     
     <section class="values" id="values">
         <div class="container values-container">
@@ -1101,42 +1051,50 @@
             <div class="values-grid">
                 <div class="value-item">
                     <span class="value-number">01</span>
-                    <svg class="value-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M8 12H16" stroke="#6A5ACD" stroke-width="1.5" stroke-linecap="round"/>
-                        <path d="M12 16V8" stroke="#6A5ACD" stroke-width="1.5" stroke-linecap="round"/>
-                        <circle cx="12" cy="12" r="9" stroke="#6A5ACD" stroke-width="1.5"/>
-                    </svg>
+                    <div class="value-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8 12H16" stroke-width="1.5" stroke-linecap="round"/>
+                            <path d="M12 16V8" stroke-width="1.5" stroke-linecap="round"/>
+                            <circle cx="12" cy="12" r="9" stroke-width="1.5"/>
+                        </svg>
+                    </div>
                     <h3 class="value-title">Artful Innovation</h3>
                     <p class="value-description">We approach problems with the curious mind of an inventor, drawing connections between seemingly unrelated fields to create novel solutions.</p>
                 </div>
                 <div class="value-item">
                     <span class="value-number">02</span>
-                    <svg class="value-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="4" y="4" width="16" height="16" rx="2" stroke="#6A5ACD" stroke-width="1.5"/>
-                        <path d="M4 12H20" stroke="#6A5ACD" stroke-width="1.5"/>
-                        <path d="M12 4V20" stroke="#6A5ACD" stroke-width="1.5"/>
-                    </svg>
+                    <div class="value-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="4" y="4" width="16" height="16" rx="2" stroke-width="1.5"/>
+                            <path d="M4 12H20" stroke-width="1.5"/>
+                            <path d="M12 4V20" stroke-width="1.5"/>
+                        </svg>
+                    </div>
                     <h3 class="value-title">Golden Proportion</h3>
                     <p class="value-description">We believe in balance between form and function, creating systems with mathematical precision that also feel intuitive and harmonious.</p>
                 </div>
                 <div class="value-item">
                     <span class="value-number">03</span>
-                    <svg class="value-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="12" cy="12" r="9" stroke="#6A5ACD" stroke-width="1.5"/>
-                        <circle cx="12" cy="12" r="5" stroke="#6A5ACD" stroke-width="1.5"/>
-                        <path d="M12 3V21" stroke="#6A5ACD" stroke-width="1.5" stroke-dasharray="1 3"/>
-                        <path d="M3 12H21" stroke="#6A5ACD" stroke-width="1.5" stroke-dasharray="1 3"/>
-                    </svg>
+                    <div class="value-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="9" stroke-width="1.5"/>
+                            <circle cx="12" cy="12" r="5" stroke-width="1.5"/>
+                            <path d="M12 3V21" stroke-width="1.5" stroke-dasharray="1 3"/>
+                            <path d="M3 12H21" stroke-width="1.5" stroke-dasharray="1 3"/>
+                        </svg>
+                    </div>
                     <h3 class="value-title">Analytical Curiosity</h3>
                     <p class="value-description">Like da Vinci's scientific approach to art, we meticulously study commerce patterns to understand the underlying principles that drive success.</p>
                 </div>
                 <div class="value-item">
                     <span class="value-number">04</span>
-                    <svg class="value-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 3L4 9V21H20V9L12 3Z" stroke="#6A5ACD" stroke-width="1.5"/>
-                        <path d="M16 13H8V21H16V13Z" stroke="#6A5ACD" stroke-width="1.5"/>
-                        <path d="M12 13V21" stroke="#6A5ACD" stroke-width="1.5"/>
-                    </svg>
+                    <div class="value-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 3L4 9V21H20V9L12 3Z" stroke-width="1.5"/>
+                            <path d="M16 13H8V21H16V13Z" stroke-width="1.5"/>
+                            <path d="M12 13V21" stroke-width="1.5"/>
+                        </svg>
+                    </div>
                     <h3 class="value-title">Sustainable Design</h3>
                     <p class="value-description">We create systems built to last, with modular components and adaptable architectures that can evolve with changing market conditions.</p>
                 </div>
@@ -1150,8 +1108,7 @@
         <div class="container cta-container">
             <h2 class="cta-title">Ready to Transform Your Ecommerce Experience?</h2>
             <p class="cta-text">Discover how our family of companies can bring mathematical precision and artistic beauty to your digital commerce strategy.</p>
-<a href="mailto:contact@mirthnmosaic.com" class="btn btn-secondary">Connect With Us</a>
-    </section>
+            <a href="mailto:contact@mirthnmosaic.com" class="btn btn-primary">Connect With Us</a> </section>
     
     <footer class="footer" id="contact">
         <div class="container">
@@ -1160,11 +1117,7 @@
                     <h3>Mirth n Mosaic</h3>
                     <p>Elevating ecommerce technology through a perfect fusion of classical principles and modern innovation.</p>
                     <div class="social-links">
-<!--                         <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a> -->
-                    </div>
+                         </div>
                 </div>
                 <div class="footer-nav">
                     <h4>Quick Links</h4>
@@ -1172,17 +1125,11 @@
                         <li><a href="#about">About Us</a></li>
                         <li><a href="#portfolio">Our Companies</a></li>
                         <li><a href="#values">Our Values</a></li>
-<!--                         <li><a href="#careers">Careers</a></li>
-                        <li><a href="#news">News & Insights</a></li> -->
                     </ul>
                 </div>
                 <div class="footer-nav">
                     <h4>Our Companies</h4>
                     <ul class="footer-links">
-<!--                         <li><a href="#">CheckoutFlow</a></li>
-                        <li><a href="#">InventoryPulse</a></li>
-                        <li><a href="#">MarketMetrics</a></li>
-                        <li><a href="#">PersonaMatch</a></li> -->
                         <li><a href="#">OctoMindAI</a></li>
                         <li><a href="#">IdeaSpark</a></li>
                         <li><a href="#">AdAlchemist</a></li>
@@ -1192,7 +1139,7 @@
                 <div class="footer-contact">
                     <h4>Contact Us</h4>
                     <ul class="contact-info">
-                        <li><i class="fas fa-envelope"></i>info@mirthnmosaic.com</li>
+                        <li>Email: info@mirthnmosaic.com</li>
                     </ul>
                 </div>
             </div>
@@ -1212,11 +1159,11 @@
             <span class="close-btn" onclick="closeModal('refundModal')">&times;</span>
             <h2>📄 Refund & Dispute Policy</h2>
             <p><strong>Effective date:</strong> 5/8/2025</p>
-            <p>All sales are final. IdeaSpark delivers non-tangible, irrevocable digital services (AI-generated specifications and supporting content). Once an order is confirmed, we cannot offer refunds, returns, chargebacks, or exchanges.</p>
-            <h3>Service errors</h3>
-            <p>If you believe a technical error prevented you from receiving the purchased deliverable, email <a href="mailto:support@generativeraas.com">support@generativeraas.com</a> within 7 calendar days of purchase. We will investigate and, if the error is verified, provide the corrected digital file at no additional charge.</p>
+            <p>All sales are final. Mirth n Mosaic and its subsidiary products (e.g. IdeaSpark) deliver non-tangible, irrevocable digital services and software access. Once an order is confirmed and service is rendered or access granted, we cannot offer refunds, returns, chargebacks, or exchanges.</p>
+            <h3>Service errors or Defects</h3>
+            <p>If you believe a technical error prevented you from receiving or using the purchased service or product as described, please contact our support team at <a href="mailto:support@mirthnmosaic.com">support@mirthnmosaic.com</a> (or the specific product's support email) within 7 calendar days of purchase. We will investigate the issue and, if a verifiable error or defect directly attributable to our systems is found, we will make reasonable efforts to provide a corrected service, access, or digital file at no additional charge. The determination of a verifiable error and the appropriate remedy will be at our sole discretion.</p>
             <h3>Disputes</h3>
-            <p>Initiating a payment dispute without first contacting us may delay resolution. We aim to respond to support emails within 2 business days.</p>
+            <p>Initiating a payment dispute or chargeback with your financial institution without first contacting us to resolve the issue may result in the immediate suspension of your service access and may delay resolution. We aim to respond to all support emails within 2-3 business days.</p>
             <h3>Governing law</h3>
             <p>This policy is governed by the laws of the State of Florida, USA.</p>
         </div>
@@ -1226,13 +1173,13 @@
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('legalModal')">&times;</span>
             <h2>🌐 Legal & Export Compliance Statement</h2>
-            <p>IdeaSpark (a product of Mirth n Mosaic LLC) provides software-as-a-service and AI-generated digital content only. No physical goods or controlled technical data are exported. Nevertheless, we observe U.S. export regulations:</p>
+            <p>Mirth n Mosaic LLC and its associated products and services (collectively, "Services") provide software-as-a-service, AI-generated digital content, and related offerings. No physical goods are typically involved, and controlled technical data is handled according to applicable laws. We are committed to observing U.S. export regulations and other relevant legal frameworks:</p>
             <ul>
-                <li><strong>Sanctioned regions.</strong> We do not offer services to individuals or entities located in embargoed or OFAC-sanctioned jurisdictions (e.g., Cuba, Iran, North Korea, Syria, the Crimea, Donetsk, and Luhansk regions).</li>
-                <li><strong>Restricted parties.</strong> We do not knowingly transact with anyone on U.S. government denied-party or sanctions lists.</li>
-                <li><strong>User responsibility.</strong> By using IdeaSpark, you certify you are not located in a restricted region, are not a restricted party, and will not re-export our services in violation of U.S. law.</li>
+                <li><strong>Sanctioned Regions:</strong> We do not offer Services to individuals or entities located in, or ordinarily resident in, embargoed or OFAC-sanctioned jurisdictions (e.g., Cuba, Iran, North Korea, Syria, the Russian Federation, and the Crimea, Donetsk, and Luhansk regions of Ukraine). This list is subject to change based on U.S. government actions.</li>
+                <li><strong>Restricted Parties:</strong> We do not knowingly transact with, or allow use of our Services by, anyone on U.S. government denied-party lists, Specially Designated Nationals (SDN) lists, or other applicable sanctions lists.</li>
+                <li><strong>User Responsibility:</strong> By using our Services, you represent and warrant that you are not located in, under the control of, or a national or resident of any restricted region, and that you are not a restricted party. You agree not to use or facilitate the use of our Services for any purpose prohibited by U.S. law, including the development, design, manufacture, or production of nuclear, chemical, or biological weapons, or missile proliferation. You are responsible for complying with all local laws regarding online conduct and acceptable content, as well as all applicable export and re-export control laws and regulations.</li>
             </ul>
-            <p>If you have export-control questions, contact <a href="mailto:legal@generativeraas.com">legal@generativeraas.com</a>.</p>
+            <p>If you have questions regarding export controls or legal compliance, please contact <a href="mailto:legal@mirthnmosaic.com">legal@mirthnmosaic.com</a>.</p>
         </div>
     </div>
 
@@ -1240,15 +1187,16 @@
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('promoModal')">&times;</span>
             <h2>🎁 Promotion Terms & Conditions</h2>
-            <p>Applies to all coupons, discounts, trials, and limited-time offers (“Promotions”) issued by IdeaSpark unless a specific promotion page states otherwise.</p>
+            <p>These Promotion Terms & Conditions apply to all coupons, discounts, trials, and limited-time offers (“Promotions”) issued by Mirth n Mosaic LLC or its subsidiary products (e.g., IdeaSpark) unless a specific promotion's landing page or direct communication explicitly states otherwise.</p>
             <ul>
-                <li><strong>Time-boxed offers.</strong> Promotions are valid only during the date / time window published. No rain checks, extensions, or substitutions.</li>
-                <li><strong>Non-transferable.</strong> Promotional codes may be used only once, by the named account holder, and cannot be exchanged for cash or credit.</li>
-                <li><strong>No cumulative discounts.</strong> Promotions cannot be combined with other coupons or bulk-pricing arrangements unless explicitly stated.</li>
-                <li><strong>Limit of liability.</strong> IdeaSpark is not liable for losses arising from an inability to redeem a promotion due to user error, expired offer, or technical issues beyond our reasonable control.</li>
-                <li><strong>Right to withdraw.</strong> We reserve the right to modify or cancel any promotion at our sole discretion and without prior notice, provided such change does not affect promotions already redeemed.</li>
-                <li><strong>Abuse & fraud.</strong> Suspected fraudulent or abusive promotion use will result in immediate withdrawal of the discount and possible account suspension.</li>
-                <li><strong>Governing law.</strong> Promotions are governed by the laws of the State of Florida, USA.</li>
+                <li><strong>Eligibility & Validity:</strong> Promotions are valid only for the period specified in the offer. They may be subject to additional eligibility criteria (e.g., new customers only, specific service plans). Promotions are void where prohibited by law.</li>
+                <li><strong>Non-Transferable & No Cash Value:</strong> Promotional codes are typically for single use by the intended recipient or account holder and cannot be transferred, sold, or exchanged for cash, credit, or other services.</li>
+                <li><strong>Limitations:</strong> Promotions cannot usually be combined with other offers, discounts, or bulk-pricing arrangements unless explicitly stated. Limit one promotion per customer or account per offer period, as applicable. Promotions do not apply to taxes or other fees unless specified.</li>
+                <li><strong>Redemption:</strong> Instructions for redeeming a promotion will be provided with the offer. Failure to follow redemption instructions may result in the inability to apply the discount.</li>
+                <li><strong>Modification & Withdrawal:</strong> We reserve the right to modify, suspend, or cancel any promotion at our sole discretion, at any time, and without prior notice. However, if a promotion is redeemed before such modification or cancellation, the original terms at the time of redemption will generally be honored, unless abuse or error is detected.</li>
+                <li><strong>Abuse & Fraud:</strong> Any suspected fraudulent activity, misuse, or abuse of promotions (e.g., creating multiple accounts to redeem a new-customer offer) will result in the immediate invalidation of the discount, potential termination of service, and other remedies as permitted by law.</li>
+                <li><strong>Liability:</strong> Mirth n Mosaic is not liable for any losses arising from an inability to redeem a promotion due to user error, an expired offer, technical issues beyond our reasonable control, or other circumstances not directly attributable to our gross negligence.</li>
+                <li><strong>Governing Law:</strong> Promotions and these terms are governed by the laws of the State of Florida, USA.</li>
             </ul>
         </div>
     </div>
@@ -1263,427 +1211,83 @@
             menuToggle.classList.toggle('active');
         });
         
-        // Create grid lines
-        const heroGrid = document.querySelector('.hero-grid');
-        
-        // Horizontal lines
-        for (let i = 0; i <= 16; i++) {
-            const line = document.createElement('div');
-            line.classList.add('hero-grid-line', 'hero-grid-line-h');
-            line.style.gridRow = i + 1;
-            heroGrid.appendChild(line);
-        }
-        
-        // Vertical lines
-        for (let i = 0; i <= 16; i++) {
-            const line = document.createElement('div');
-            line.classList.add('hero-grid-line', 'hero-grid-line-v');
-            line.style.gridColumn = i + 1;
-            heroGrid.appendChild(line);
-        }
-        
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
                 e.preventDefault();
                 
-                const target = document.querySelector(this.getAttribute('href'));
-                
-                if (target) {
-                    window.scrollTo({
-                        top: target.offsetTop,
-                        behavior: 'smooth'
-                    });
-                    
-                    // Close mobile menu if open
-                    navItems.classList.remove('active');
-                    menuToggle.classList.remove('active');
+                const targetId = this.getAttribute('href');
+                // Check if it's a modal link or a section link
+                if (targetId.startsWith('#') && targetId.length > 1 && !this.onclick) {
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - (document.querySelector('.nav')?.offsetHeight || 0), // Adjust for fixed nav
+                            behavior: 'smooth'
+                        });
+                        
+                        // Close mobile menu if open and active
+                        if (navItems.classList.contains('active')) {
+                            navItems.classList.remove('active');
+                            menuToggle.classList.remove('active');
+                        }
+                    }
                 }
             });
         });
         
         // Custom cursor
         const cursor = document.querySelector('.custom-cursor');
-        
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-        });
-        
-        // p5.js Mosaic Pattern Construction Sketch
-        function createMosaicSketch() {
-            return function(p) {
-                // Mosaic tiles
-                let tiles = [];
-                let pendingTiles = [];
-                const tileSize = 20;
-                let columns = Math.ceil(p.windowWidth / tileSize); // Use p.windowWidth
-                let rows = Math.ceil(p.windowHeight / tileSize); // Use p.windowHeight
-                
-                // Colors
-                const primaryColors = [
-                    p.color('#D4AF37'), // Gold
-                    p.color('#1E3F66'), // Deep blue
-                    p.color('#8C1C13'), // Deep red
-                    p.color('#FFE03D'), // TE Yellow
-                    p.color('#1A1A1A')  // TE Black
-                ];
-                
-                // Golden ratio for harmonious color selection
-                const goldenRatio = 0.618033988749895;
-                let hue = Math.random();
-                
-                p.setup = function() {
-                    let canvas = p.createCanvas(p.windowWidth, p.windowHeight);
-                    canvas.parent('p5-container');
-                    p.frameRate(30);
-                    
-                    // Initialize grid with empty cells
-                    for (let x = 0; x < columns; x++) {
-                        tiles[x] = [];
-                        for (let y = 0; y < rows; y++) {
-                            tiles[x][y] = {
-                                active: false,
-                                color: null,
-                                size: 0,
-                                targetSize: tileSize,
-                                opacity: 0,
-                                targetOpacity: p.random(0.2, 0.7),
-                                pattern: Math.floor(p.random(4))
-                            };
-                        }
-                    }
-                    
-                    // Start with a few tiles
-                    addNewTileBatch();
-                };
-                
-                p.draw = function() {
-                    p.clear();
-                    
-                    // Add new tiles occasionally
-                    if (p.frameCount % 10 === 0 && pendingTiles.length < 10) {
-                        addNewTileBatch();
-                    }
-                    
-                    // Process pending tiles
-                    processPendingTiles();
-                    
-                    // Draw all tiles
-                    drawTiles();
-                    
-                    // Draw golden ratio spiral at mouse position
-                    drawGoldenSpiral(p, p.mouseX, p.mouseY, 5, 0.08);
-                };
-                
-                function addNewTileBatch() {
-                    // Add 2-5 new tiles
-                    const count = Math.floor(p.random(2, 6));
-                    
-                    for (let i = 0; i < count; i++) {
-                        // Try to find an empty spot near existing tiles
-                        const tile = findEmptyTileNearActive();
-                        if (tile) {
-                            // Generate a color using golden ratio
-                            hue += goldenRatio;
-                            hue %= 1;
-                            
-                            // Choose a color - either from primary colors or a generated one
-                            let color;
-                            if (p.random() < 0.7) {
-                                // Use one of the primary brand colors
-                                color = primaryColors[Math.floor(p.random(primaryColors.length))];
-                            } else {
-                                // Generate a color based on golden ratio
-                                color = p.color(p.map(hue, 0, 1, 0, 360), 70, 90, 70);
-                            }
-                            
-                            // Add to pending queue for animation
-                            pendingTiles.push({
-                                x: tile.x,
-                                y: tile.y,
-                                color: color
-                            });
-                        }
-                    }
-                }
-                
-                function findEmptyTileNearActive() {
-                    // If no active tiles yet, start from center
-                    let activeTiles = [];
-                    
-                    for (let x = 0; x < columns; x++) {
-                        for (let y = 0; y < rows; y++) {
-                            if (tiles[x] && tiles[x][y] && tiles[x][y].active) { // Added checks for tiles[x] and tiles[x][y]
-                                activeTiles.push({x, y});
-                            }
-                        }
-                    }
-                    
-                    if (activeTiles.length === 0) {
-                        // Start in the center
-                        return {
-                            x: Math.floor(columns / 2),
-                            y: Math.floor(rows / 2)
-                        };
-                    }
-                    
-                    // Pick a random active tile
-                    const sourceTile = activeTiles[Math.floor(p.random(activeTiles.length))];
-                    
-                    // Look for empty neighbors
-                    const directions = [
-                        {dx: -1, dy: 0},
-                        {dx: 1, dy: 0},
-                        {dx: 0, dy: -1},
-                        {dx: 0, dy: 1},
-                        {dx: -1, dy: -1},
-                        {dx: 1, dy: 1},
-                        {dx: -1, dy: 1},
-                        {dx: 1, dy: -1}
-                    ];
-                    
-                    // Shuffle directions for more organic growth
-                    shuffleArray(directions);
-                    
-                    for (const dir of directions) {
-                        const nx = sourceTile.x + dir.dx;
-                        const ny = sourceTile.y + dir.dy;
-                        
-                        // Check bounds
-                        if (nx >= 0 && nx < columns && ny >= 0 && ny < rows) {
-                             // Check if empty
-                            if (tiles[nx] && tiles[nx][ny] && !tiles[nx][ny].active) { // Added checks
-                                return {x: nx, y: ny};
-                            }
-                        }
-                    }
-                    
-                    // If no empty neighbors found, look for any empty tile
-                    const emptyTiles = [];
-                    for (let x = 0; x < columns; x++) {
-                        for (let y = 0; y < rows; y++) {
-                           if (tiles[x] && tiles[x][y] && !tiles[x][y].active) { // Added checks
-                                emptyTiles.push({x, y});
-                            }
-                        }
-                    }
-                    
-                    if (emptyTiles.length > 0) {
-                        return emptyTiles[Math.floor(p.random(emptyTiles.length))];
-                    }
-                    
-                    return null; // No empty tiles left
-                }
-                
-                function processPendingTiles() {
-                    if (pendingTiles.length > 0) {
-                        const tile = pendingTiles.shift();
-                         if (tiles[tile.x] && tiles[tile.x][tile.y]) { // Added check
-                            tiles[tile.x][tile.y].active = true;
-                            tiles[tile.x][tile.y].color = tile.color;
-                        }
-                    }
-                }
-                
-                function drawTiles() {
-                    for (let x = 0; x < columns; x++) {
-                        for (let y = 0; y < rows; y++) {
-                            if (tiles[x] && tiles[x][y]) { // Added check
-                                const tile = tiles[x][y];
-                                
-                                if (tile.active) {
-                                    // Animate tile appearance
-                                    if (tile.size < tile.targetSize) {
-                                        tile.size += 0.5;
-                                    }
-                                    
-                                    if (tile.opacity < tile.targetOpacity) {
-                                        tile.opacity += 0.05;
-                                    }
-                                    
-                                    // Calculate position
-                                    const posX = x * tileSize;
-                                    const posY = y * tileSize;
-                                    
-                                    // Set opacity
-                                    tile.color.setAlpha(tile.opacity * 255);
-                                    p.fill(tile.color);
-                                    p.noStroke();
-                                    
-                                    // Draw tile with different patterns
-                                    switch (tile.pattern) {
-                                        case 0: // Square
-                                            p.rect(
-                                                posX + (tileSize - tile.size) / 2,
-                                                posY + (tileSize - tile.size) / 2,
-                                                tile.size,
-                                                tile.size
-                                            );
-                                            break;
-                                        case 1: // Circle
-                                            p.ellipse(
-                                                posX + tileSize / 2,
-                                                posY + tileSize / 2,
-                                                tile.size,
-                                                tile.size
-                                            );
-                                            break;
-                                        case 2: // Triangle
-                                            p.triangle(
-                                                posX + tileSize / 2,
-                                                posY + (tileSize - tile.size) / 2,
-                                                posX + (tileSize - tile.size) / 2,
-                                                posY + tileSize - (tileSize - tile.size) / 2,
-                                                posX + tileSize - (tileSize - tile.size) / 2,
-                                                posY + tileSize - (tileSize - tile.size) / 2
-                                            );
-                                            break;
-                                        case 3: // Diamond
-                                            p.quad(
-                                                posX + tileSize / 2,
-                                                posY + (tileSize - tile.size) / 2,
-                                                posX + tileSize - (tileSize - tile.size) / 2,
-                                                posY + tileSize / 2,
-                                                posX + tileSize / 2,
-                                                posY + tileSize - (tileSize - tile.size) / 2,
-                                                posX + (tileSize - tile.size) / 2,
-                                                posY + tileSize / 2
-                                            );
-                                            break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                // Draw golden ratio spiral around mouse cursor
-                function drawGoldenSpiral(p, x, y, size, growth) {
-                    p.push();
-                    p.translate(x, y);
-                    p.noFill();
-                    p.stroke(255, 224, 61, 50); // Yellow with low opacity
-                    
-                    let goldenRatioVal = 1.618; // Renamed from goldenRatio to avoid conflict
-                    let angle = 0;
-                    let prevX = 0;
-                    let prevY = 0;
-                    
-                    for (let i = 0; i < 50; i++) {
-                        let radius = size * Math.pow(goldenRatioVal, growth * i);
-                        let newX = radius * Math.cos(angle);
-                        let newY = radius * Math.sin(angle);
-                        
-                        if (i > 0) {
-                            p.strokeWeight(0.5);
-                            p.line(prevX, prevY, newX, newY);
-                        }
-                        
-                        prevX = newX;
-                        prevY = newY;
-                        angle += 0.1; // Adjust for spiral tightness
-                    }
-                    p.pop();
-                }
-                
-                // Helper function to shuffle array
-                function shuffleArray(array) {
-                    for (let i = array.length - 1; i > 0; i--) {
-                        const j = Math.floor(p.random(i + 1));
-                        [array[i], array[j]] = [array[j], array[i]];
-                    }
-                }
-                
-                // Handle window resize
-                 p.windowResized = function() {
-                    p.resizeCanvas(p.windowWidth, p.windowHeight);
-                    
-                    // Recalculate columns and rows
-                    const newColumns = Math.ceil(p.windowWidth / tileSize); // Use p.windowWidth
-                    const newRows = Math.ceil(p.windowHeight / tileSize); // Use p.windowHeight
-                    
-                    // Create new tiles array for the new size
-                    let newTiles = [];
-                    for (let x = 0; x < newColumns; x++) {
-                        newTiles[x] = [];
-                        for (let y = 0; y < newRows; y++) {
-                            if (tiles[x] && tiles[x][y]) { // If old tile exists, copy it
-                                newTiles[x][y] = tiles[x][y];
-                            } else { // Otherwise, create a new empty tile
-                                newTiles[x][y] = {
-                                    active: false,
-                                    color: null,
-                                    size: 0,
-                                    targetSize: tileSize,
-                                    opacity: 0,
-                                    targetOpacity: p.random(0.2, 0.7),
-                                    pattern: Math.floor(p.random(4))
-                                };
-                            }
-                        }
-                    }
-                    tiles = newTiles; // Assign the new array to the old one
-                    columns = newColumns; // Update column count
-                    rows = newRows; // Update row count
-                };
-            };
+        if (cursor) { // Check if cursor element exists
+            document.addEventListener('mousemove', (e) => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+            });
         }
-        
-        // Initialize p5.js sketch
-        new p5(createMosaicSketch());
-        
-        // Interactive company cards
-        const companyCards = document.querySelectorAll('.company-card');
-        
-        companyCards.forEach(card => {
-            card.addEventListener('mouseenter', () => {
-                // Add slight rotation on hover
-                card.style.transform = `translateY(-8px) rotate(${Math.random() * 2 - 1}deg)`;
-            });
-            
-            card.addEventListener('mouseleave', () => {
-                // Reset transform on mouse leave
-                card.style.transform = '';
-            });
-        });
         
         // Section animations on scroll
         const sections = document.querySelectorAll('section');
-        
+        const heroSection = document.querySelector('.hero');
+
         function checkScroll() {
             const triggerBottom = window.innerHeight * 0.8;
             
             sections.forEach(section => {
+                if (section === heroSection) return; // Skip hero for this animation
+
                 const sectionTop = section.getBoundingClientRect().top;
                 
                 if (sectionTop < triggerBottom) {
                     section.style.opacity = '1';
                     section.style.transform = 'translateY(0)';
+                } else { // Optional: Reset if scrolled back up past trigger
+                    // section.style.opacity = '0';
+                    // section.style.transform = 'translateY(20px)';
                 }
             });
         }
         
         // Apply initial styles for scroll animation
         sections.forEach(section => {
-            if (section !== document.querySelector('.hero')) {
+            if (section !== heroSection) { // Exclude hero section from initial fade-in
                 section.style.opacity = '0';
                 section.style.transform = 'translateY(20px)';
-                section.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+                section.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
             }
         });
         
-        // Check scroll position on load and scroll
         window.addEventListener('load', checkScroll);
-        window.addEventListener('scroll', checkScroll);
+        window.addEventListener('scroll', checkScroll, { passive: true }); // Use passive listener for scroll performance
 
         // Modal JavaScript
         function openModal(modalId) {
-            document.getElementById(modalId).style.display = "block";
+            const modal = document.getElementById(modalId);
+            if (modal) modal.style.display = "block";
         }
 
         function closeModal(modalId) {
-            document.getElementById(modalId).style.display = "none";
+            const modal = document.getElementById(modalId);
+            if (modal) modal.style.display = "none";
         }
 
         // Close modal if user clicks anywhere outside of the modal content
@@ -1692,6 +1296,287 @@
                 event.target.style.display = "none";
             }
         }
+        // Close modal with ESC key
+        window.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                document.querySelectorAll('.modal').forEach(modal => {
+                    if (modal.style.display === 'block') {
+                        modal.style.display = 'none';
+                    }
+                });
+            }
+        });
+
+        // 3D Particle Morphing Mosaic Sketch
+        function createParticleMorphingSketch() {
+            return function(p) {
+                let particles = [];
+                const numParticles = 300; // Number of particles
+                let currentFormation = 0;
+                const formations = ['scatter', 'sphere', 'grid', 'icosahedron', 'rings'];
+                let formationChangeInterval;
+                const particleSize = 5; // Size of the cube particles
+                let lerpFactor = 0.03; // Speed of morphing
+
+                // Colors from CSS variables (will be parsed)
+                let teBlack, teYellow, accentGold, parchment;
+
+                // Particle class
+                class Particle {
+                    constructor(x, y, z) {
+                        this.pos = p.createVector(x, y, z);
+                        this.targetPos = p.createVector(x, y, z);
+                        this.vel = p.createVector();
+                        this.acc = p.createVector();
+                        this.color = teBlack; // Default color
+                        this.originalColor = teBlack;
+                    }
+
+                    // Apply force for movement
+                    applyForce(force) {
+                        this.acc.add(force);
+                    }
+
+                    // Update particle position
+                    update() {
+                        // Morphing behavior
+                        this.pos.lerp(this.targetPos, lerpFactor);
+
+                        // Add some subtle random movement if desired (optional)
+                        // this.vel.add(p5.Vector.random3D().mult(0.05));
+                        // this.pos.add(this.vel);
+                        // this.vel.limit(0.5);
+                    }
+
+                    // Set a new target position for morphing
+                    setTarget(newTargetX, newTargetY, newTargetZ) {
+                        this.targetPos.set(newTargetX, newTargetY, newTargetZ);
+                    }
+                    
+                    // Set particle color
+                    setColor(col) {
+                        this.color = col;
+                        this.originalColor = col;
+                    }
+
+                    // Display the particle
+                    display() {
+                        p.push();
+                        p.translate(this.pos.x, this.pos.y, this.pos.z);
+                        p.fill(this.color);
+                        p.noStroke();
+                        p.box(particleSize); // Draw particle as a cube
+                        p.pop();
+                    }
+                }
+
+                p.setup = function() {
+                    // Get colors from CSS variables after DOM is loaded
+                    const styles = getComputedStyle(document.documentElement);
+                    teBlack = p.color(styles.getPropertyValue('--te-black').trim() || '#1A1A1A');
+                    teYellow = p.color(styles.getPropertyValue('--te-yellow').trim() || '#FFE03D');
+                    accentGold = p.color(styles.getPropertyValue('--accent-gold').trim() || '#D4AF37');
+                    parchment = p.color(styles.getPropertyValue('--parchment').trim() || '#F5F2E9');
+
+                    let canvas = p.createCanvas(p.windowWidth, p.windowHeight, p.WEBGL);
+                    canvas.parent('p5-container'); // Attach canvas to the container
+                    
+                    // Initialize particles
+                    for (let i = 0; i < numParticles; i++) {
+                        // Initial random positions within a sphere
+                        let r = p.random(p.min(p.width, p.height) / 4, p.min(p.width, p.height) / 3);
+                        let theta = p.random(p.TWO_PI);
+                        let phi = p.random(p.PI);
+                        let x = r * p.sin(phi) * p.cos(theta);
+                        let y = r * p.sin(phi) * p.sin(theta);
+                        let z = r * p.cos(phi);
+                        particles[i] = new Particle(x, y, z);
+                        
+                        // Assign colors (mix of TE Black, with some Gold/Yellow accents)
+                        if (p.random(1) < 0.1) {
+                            particles[i].setColor(teYellow);
+                        } else if (p.random(1) < 0.2) {
+                            particles[i].setColor(accentGold);
+                        } else {
+                            particles[i].setColor(teBlack);
+                        }
+                    }
+                    
+                    // Set initial formation
+                    changeFormation(); 
+                    // Change formation every 7 seconds
+                    formationChangeInterval = setInterval(changeFormation, 7000);
+
+                    // Allow mouse control for camera
+                    p.orbitControl(2, 2, 0.1); // (sensitivityX, sensitivityY, sensitivityZoom)
+                };
+
+                p.draw = function() {
+                    p.background(0, 0, 0, 0); // Transparent background for the canvas itself
+                                            // The .hero section provides the --te-black background
+                    p.ambientLight(150); // Soft ambient light
+                    p.directionalLight(255, 255, 250, 0.5, 0.5, -1); // A light source
+
+                    // Update and display particles
+                    for (let particle of particles) {
+                        particle.update();
+                        particle.display();
+                    }
+                };
+
+                // Function to change the particle formation
+                function changeFormation() {
+                    currentFormation = (currentFormation + 1) % formations.length;
+                    let formationType = formations[currentFormation];
+                    // console.log("Changing formation to: " + formationType);
+
+                    switch (formationType) {
+                        case 'scatter':
+                            setScatterFormation();
+                            break;
+                        case 'sphere':
+                            setSphereFormation(p.min(p.width, p.height) / 3.5);
+                            break;
+                        case 'grid':
+                            setGridFormation(10, 100); // 10 particles per side, 100 unit spacing
+                            break;
+                        case 'icosahedron':
+                            setIcosahedronFormation(p.min(p.width, p.height) / 3);
+                            break;
+                        case 'rings':
+                            setRingFormation(p.min(p.width, p.height) / 4, 3, 50); // Base radius, num rings, ring spacing
+                            break;
+                    }
+                }
+
+                // Formation: Random Scatter (within a larger sphere)
+                function setScatterFormation() {
+                    for (let particle of particles) {
+                        let r = p.random(p.min(p.width, p.height) / 2.5, p.min(p.width, p.height) / 2);
+                        let theta = p.random(p.TWO_PI);
+                        let phi = p.random(p.PI);
+                        particle.setTarget(
+                            r * p.sin(phi) * p.cos(theta),
+                            r * p.sin(phi) * p.sin(theta),
+                            r * p.cos(phi)
+                        );
+                    }
+                }
+
+                // Formation: Sphere
+                function setSphereFormation(radius) {
+                    for (let i = 0; i < particles.length; i++) {
+                        // Distribute points evenly on a sphere using Fibonacci lattice
+                        const phi = Math.acos(-1 + (2 * i) / particles.length);
+                        const theta = Math.sqrt(particles.length * Math.PI) * phi;
+                        
+                        particles[i].setTarget(
+                            radius * p.cos(theta) * p.sin(phi),
+                            radius * p.sin(theta) * p.sin(phi),
+                            radius * p.cos(phi)
+                        );
+                    }
+                }
+
+                // Formation: 3D Grid (Mosaic)
+                function setGridFormation(particlesPerSide, spacing) {
+                    let sideLength = Math.cbrt(numParticles); // Approximate for a cube
+                    sideLength = Math.max(2, Math.floor(sideLength)); // Ensure at least 2
+                    let particleIndex = 0;
+                    const offset = - (sideLength -1) * spacing / 2;
+
+                    for (let x = 0; x < sideLength; x++) {
+                        for (let y = 0; y < sideLength; y++) {
+                            for (let z = 0; z < sideLength; z++) {
+                                if (particleIndex < numParticles) {
+                                    particles[particleIndex].setTarget(
+                                        offset + x * spacing,
+                                        offset + y * spacing,
+                                        offset + z * spacing
+                                    );
+                                    particleIndex++;
+                                } else { break; }
+                            }
+                            if (particleIndex >= numParticles) break;
+                        }
+                        if (particleIndex >= numParticles) break;
+                    }
+                    // Any remaining particles can go to origin or scatter
+                    for (let i = particleIndex; i < numParticles; i++) {
+                        particles[i].setTarget(0,0,0);
+                    }
+                }
+
+                // Formation: Icosahedron (particles at vertices)
+                function setIcosahedronFormation(radius) {
+                    const t = (1 + Math.sqrt(5)) / 2; // Golden ratio
+                    const icosahedronVertices = [
+                        p.createVector(-1,  t,  0), p.createVector( 1,  t,  0), p.createVector(-1, -t,  0), p.createVector( 1, -t,  0),
+                        p.createVector( 0, -1,  t), p.createVector( 0,  1,  t), p.createVector( 0, -1, -t), p.createVector( 0,  1, -t),
+                        p.createVector( t,  0, -1), p.createVector( t,  0,  1), p.createVector(-t,  0, -1), p.createVector(-t,  0,  1)
+                    ];
+
+                    for (let i = 0; i < particles.length; i++) {
+                        // Cycle through vertices for all particles
+                        const v = icosahedronVertices[i % icosahedronVertices.length].copy().mult(radius / t); // Scale to radius
+                        particles[i].setTarget(v.x, v.y, v.z);
+                    }
+                }
+                
+                // Formation: Concentric Rings (TE Inspired)
+                function setRingFormation(baseRadius, numRings, ringSpacing) {
+                    let particleIndex = 0;
+                    const particlesPerRingApprox = Math.floor(numParticles / numRings);
+
+                    for (let r = 0; r < numRings; r++) {
+                        const currentRadius = baseRadius + r * ringSpacing;
+                        const particlesInThisRing = (r === numRings - 1) ? (numParticles - particleIndex) : particlesPerRingApprox;
+                        
+                        for (let i = 0; i < particlesInThisRing; i++) {
+                            if (particleIndex < numParticles) {
+                                const angle = p.map(i, 0, particlesInThisRing, 0, p.TWO_PI);
+                                // Rings can be in XY, XZ, or YZ plane, or rotate
+                                const x = currentRadius * p.cos(angle);
+                                const y = currentRadius * p.sin(angle);
+                                const z = r * 10 - (numRings * 10 / 2); // Stagger rings along Z
+                                
+                                particles[particleIndex].setTarget(x, y, z);
+                                particleIndex++;
+                            } else { break; }
+                        }
+                        if (particleIndex >= numParticles) break;
+                    }
+                     // Any remaining particles
+                    for (let i = particleIndex; i < numParticles; i++) {
+                        particles[i].setTarget(0,0,0);
+                    }
+                }
+
+
+                // Handle window resize
+                p.windowResized = function() {
+                    p.resizeCanvas(p.windowWidth, p.windowHeight);
+                    // Perspective might need adjustment if custom, but default should handle it
+                    // Re-trigger current formation to adjust to new size if needed
+                     switch (formations[currentFormation]) {
+                        case 'scatter': setScatterFormation(); break;
+                        case 'sphere': setSphereFormation(p.min(p.width, p.height) / 3.5); break;
+                        case 'grid': setGridFormation(10, p.min(p.width,p.height)/15); break; // Adjust spacing
+                        case 'icosahedron': setIcosahedronFormation(p.min(p.width, p.height) / 3); break;
+                        case 'rings': setRingFormation(p.min(p.width, p.height) / 4, 3, p.min(p.width,p.height)/20); break; // Adjust spacing
+                    }
+                };
+
+                // Cleanup when sketch is removed (e.g., for hot reloading or page navigation)
+                p.remove = function() {
+                    clearInterval(formationChangeInterval);
+                }
+            };
+        }
+        
+        // Initialize p5.js sketch
+        let myp5 = new p5(createParticleMorphingSketch());
+
     </script>
 </body>
 </html>
